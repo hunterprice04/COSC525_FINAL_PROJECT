@@ -6,6 +6,17 @@
 
 - [Rendering 3D Images with Pytorch3d](https://towardsdatascience.com/how-to-render-3d-files-using-pytorch3d-ef9de72483f8)
 
+# Image Generation
+## OpenAI DALL-E
+https://openai.com/blog/dall-e/
+https://github.com/openai/dall-e
+
+# Image Classification
+## OpenAI CLIP
+https://blog.roboflow.com/openai-clip/
+https://blog.roboflow.com/how-to-use-openai-clip/
+
+
 ## [NVIDIA's New AI: Enhance!](https://www.youtube.com/watch?v=e0yEOw6Zews)
 
 - 📝 The paper "EG3D: Efficient Geometry-aware 3D Generative Adversarial Networks" is available here:
