@@ -2,19 +2,33 @@
 
 - [Inverse Graphics GAN: Learning to Generate 3D Shapes from Unstructured 2D Data](https://arxiv.org/pdf/2002.12674.pdf)
 
-# Libraries To Use
+# Image Classification
+## OpenAI CLIP
+https://blog.roboflow.com/openai-clip/
+https://blog.roboflow.com/how-to-use-openai-clip/
 
-- [Rendering 3D Images with Pytorch3d](https://towardsdatascience.com/how-to-render-3d-files-using-pytorch3d-ef9de72483f8)
+## Use-Case:
+- Feed in original image => get text representation of image.
+  - For example, if the input is an image of dog on a lawn, the output is "image of a dog on a lawn".
 
 # Image Generation
 ## OpenAI DALL-E
 https://openai.com/blog/dall-e/
 https://github.com/openai/dall-e
 
-# Image Classification
-## OpenAI CLIP
-https://blog.roboflow.com/openai-clip/
-https://blog.roboflow.com/how-to-use-openai-clip/
+## Use-Case:
+- The user edits the original text representation => this model generates a new image.
+  - For example, "image of a dog on a street" => model generates corresponding image
+
+## Performance and Limitations
+
+The heavy compression from the encoding process results in a noticeable loss of detail in the reconstructed images. This
+renders it inappropriate for applications that require fine-grained details of the image to be preserved.
+
+# Libraries To Use
+
+- [Rendering 3D Images with Pytorch3d](https://towardsdatascience.com/how-to-render-3d-files-using-pytorch3d-ef9de72483f8)
+
 
 
 ## [NVIDIA's New AI: Enhance!](https://www.youtube.com/watch?v=e0yEOw6Zews)
