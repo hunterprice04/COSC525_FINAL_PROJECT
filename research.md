@@ -29,8 +29,21 @@ renders it inappropriate for applications that require fine-grained details of t
 
 - [Rendering 3D Images with Pytorch3d](https://towardsdatascience.com/how-to-render-3d-files-using-pytorch3d-ef9de72483f8)
 
-
-
+# Conference Papers:
+- [CVF Sponsored Conferences](https://openaccess.thecvf.com/menu)
+- [WACV 2022](https://openaccess.thecvf.com/WACV2022)
+  - [UNETR: Transformers for 3D Medical Image Segmentation](https://openaccess.thecvf.com/content/WACV2022/papers/Hatamizadeh_UNETR_Transformers_for_3D_Medical_Image_Segmentation_WACV_2022_paper.pdf)
+  - [GraN-GAN: Piecewise Gradient Normalization for Generative Adversarial
+Networks](https://openaccess.thecvf.com/content/WACV2022/papers/Bhaskara_GraN-GAN_Piecewise_Gradient_Normalization_for_Generative_Adversarial_Networks_WACV_2022_paper.pdf)
+- [CVPR 2021](https://openaccess.thecvf.com/CVPR2021?day=all)
+  - [Zero-Shot Instance Segmentation](https://openaccess.thecvf.com/content/CVPR2021/papers/Zheng_Zero-Shot_Instance_Segmentation_CVPR_2021_paper.pdf)
+  - [Propagate Yourself: Exploring Pixel-Level Consistency for Unsupervised Visual
+  Representation Learning](https://openaccess.thecvf.com/content/CVPR2021/papers/Xie_Propagate_Yourself_Exploring_Pixel-Level_Consistency_for_Unsupervised_Visual_Representation_Learning_CVPR_2021_paper.pdf)
+    - Microsoft Research Asia
+  - [Exploring Simple Siamese Representation Learning](https://openaccess.thecvf.com/content/CVPR2021/papers/Chen_Exploring_Simple_Siamese_Representation_Learning_CVPR_2021_paper.pdf)
+    - Facebook AI Research 
+  - [Pre-Trained Image Processing Transformer](https://openaccess.thecvf.com/content/CVPR2021/papers/Chen_Pre-Trained_Image_Processing_Transformer_CVPR_2021_paper.pdf)
+- 
 ## [NVIDIA's New AI: Enhance!](https://www.youtube.com/watch?v=e0yEOw6Zews)
 
 - 📝 The paper "EG3D: Efficient Geometry-aware 3D Generative Adversarial Networks" is available here:
