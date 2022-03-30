@@ -35,6 +35,10 @@ renders it inappropriate for applications that require fine-grained details of t
   - [UNETR: Transformers for 3D Medical Image Segmentation](https://openaccess.thecvf.com/content/WACV2022/papers/Hatamizadeh_UNETR_Transformers_for_3D_Medical_Image_Segmentation_WACV_2022_paper.pdf)
   - [GraN-GAN: Piecewise Gradient Normalization for Generative Adversarial
 Networks](https://openaccess.thecvf.com/content/WACV2022/papers/Bhaskara_GraN-GAN_Piecewise_Gradient_Normalization_for_Generative_Adversarial_Networks_WACV_2022_paper.pdf)
+  - [Pixel-Level Bijective Matching for Video Object Segmentation](https://openaccess.thecvf.com/content/WACV2022/papers/Cho_Pixel-Level_Bijective_Matching_for_Video_Object_Segmentation_WACV_2022_paper.pdf)
+  - [Multimodal Learning using Optimal Transport
+for Sarcasm and Humor Detection](https://openaccess.thecvf.com/content/WACV2022/papers/Pramanick_Multimodal_Learning_Using_Optimal_Transport_for_Sarcasm_and_Humor_Detection_WACV_2022_paper.pdf)
+  - [Semi-Supervised Semantic Segmentation of Vessel Images Using Leaking Perturbations](https://openaccess.thecvf.com/content/WACV2022/papers/Hou_Semi-Supervised_Semantic_Segmentation_of_Vessel_Images_Using_Leaking_Perturbations_WACV_2022_paper.pdf)
 - [CVPR 2021](https://openaccess.thecvf.com/CVPR2021?day=all)
   - [Zero-Shot Instance Segmentation](https://openaccess.thecvf.com/content/CVPR2021/papers/Zheng_Zero-Shot_Instance_Segmentation_CVPR_2021_paper.pdf)
   - [Propagate Yourself: Exploring Pixel-Level Consistency for Unsupervised Visual
