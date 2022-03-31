@@ -1,6 +1,34 @@
 # Papers
 
+# Self driving
+## 2022
+- [End-to-end deep learning-based autonomous driving control for high-speed environment](https://link.springer.com/article/10.1007/s11227-021-03929-8)
+- [Design of robust deep learning-based object detection and classification model for autonomous driving applications](https://link.springer.com/article/10.1007/s00500-021-06706-0)
+- [Review the state-of-the-art technologies of semantic segmentation based on deep learning](https://www.sciencedirect.com/science/article/pii/S0925231222000054?casa_token=d0LOQT-xlBcAAAAA:0KkE_saxoMvDfSuf3-CpHxCHYtn8SGNyHy_17k-mcp0y-SXmD2IS75q3XRsgaqMPdXPl-S9Y)
+  - On semantic segmentation. References self-driving applications
+- [Deep Learning-Based Modeling of Pedestrian Perception and Decision-Making in Refuge Island for Autonomous Driving](https://link.springer.com/chapter/10.1007/978-3-030-77185-0_9)
+- [Pyramid Bayesian Method for Model Uncertainty Evaluation of Semantic Segmentation in Autonomous Driving](https://link.springer.com/article/10.1007/s42154-021-00165-x)
+- [Efficient Deep Reinforcement Learning With Imitative Expert Priors for Autonomous Driving](https://ieeexplore.ieee.org/abstract/document/9694460?casa_token=PlOaQ1K5ZL0AAAAA:5VKp4RkPXnAc6Vi1tlmaBVK8QyoKEm18mNHzVggzB6Y2HJPnsCkKVFAH2KdjDnF1c2YIIc0)
+- [Combining YOLO and Deep Reinforcement Learning for Autonomous Driving in Public Roadworks Scenarios](https://www.scitepress.org/Papers/2022/109136/109136.pdf)
+## 2021
+- [Deep Learning for Safe Autonomous Driving: Current Challenges and Future Directions](https://ieeexplore.ieee.org/abstract/document/9284628)
+## 2020
+- [A survey of deep learning techniques for autonomous driving](https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.21918?casa_token=HQXYv2N9VWsAAAAA:EDhhQnfs2misG54n-sOS3JsT_Qpidp_8GPjtAWcM8O-Tp64rbscgNXpdGyLuo9A6bxTSUWV7dQuk)
+## 2019
+- [Toward a Brain-Inspired System: Deep Recurrent Reinforcement Learning for a Simulated Self-Driving Agent
+](https://www.frontiersin.org/articles/10.3389/fnbot.2019.00040/full)
+- [Deep learning-based image recognition for autonomous driving](https://www.sciencedirect.com/science/article/pii/S0386111219301566)
+## 2017
+- [Deep Reinforcement Learning framework for Autonomous Driving](https://www.ingentaconnect.com/content/ist/ei/2017/00002017/00000019/art00012)
+
+
+
+
+
+# GAN 
 - [Inverse Graphics GAN: Learning to Generate 3D Shapes from Unstructured 2D Data](https://arxiv.org/pdf/2002.12674.pdf)
+
+
 
 # Image Classification
 ## OpenAI CLIP
@@ -24,6 +52,7 @@ https://github.com/openai/dall-e
 
 The heavy compression from the encoding process results in a noticeable loss of detail in the reconstructed images. This
 renders it inappropriate for applications that require fine-grained details of the image to be preserved.
+
 
 # Libraries To Use
 
