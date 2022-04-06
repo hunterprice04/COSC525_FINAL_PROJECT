@@ -115,4 +115,4 @@ test/
 
 run_configs/
 
-data/*.zst
+data/datasets/*
