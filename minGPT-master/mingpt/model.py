@@ -99,7 +99,7 @@ class Block(nn.Module):
         return x
 
 class GPT(nn.Module):
-    """  the full GPT language model, with a context size of block_size """
+    """the full GPT language model, with a context size of block_size """
 
     def __init__(self, config):
         super().__init__()
@@ -117,7 +117,7 @@ class GPT(nn.Module):
         self.block_size = config.block_size
         self.apply(self._init_weights)
 
-        logger.info("number of parameters: %e", sum(p.numel() for p in self.parameters()))
+        logger.info(f"# Params: {sum(p.numel() for p in self.parameters())}")
 
     def get_block_size(self):
         return self.block_size

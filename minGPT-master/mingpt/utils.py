@@ -5,6 +5,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 def set_seed(seed):
+    print(f"Setting seed to: {seed}")
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
