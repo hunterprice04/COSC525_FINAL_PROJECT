@@ -163,3 +163,5 @@ decoder.pkl
 
 .DS_Store
 
+*.zst
+*.zst.bak

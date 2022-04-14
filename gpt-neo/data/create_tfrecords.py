@@ -1,17 +1,17 @@
-import argparse
-import os
-from pathlib import Path
-
-import ftfy
-import tensorflow as tf
-from lm_dataformat import Reader
-from tokenizers import Tokenizer
-from transformers import GPT2TokenizerFast
-from tqdm import tqdm
-import logging
 from multiprocessing import Pool, cpu_count
-from itertools import repeat
+
+import argparse
+import ftfy
+import logging
+import os
 import re
+import tensorflow as tf
+from itertools import repeat
+from lm_dataformat import Reader
+from pathlib import Path
+from tokenizers import Tokenizer
+from tqdm import tqdm
+from transformers import GPT2TokenizerFast
 
 logging.getLogger("transformers").setLevel(logging.ERROR)
 
@@ -127,7 +127,7 @@ def write_files(files, files_per, output_dir, out_name, start_no, write_remainde
     chunks = split_list(files, files_per)
     if not chunks:
         return
-      
+
     if len(chunks[-1]) != files_per and not write_remainder:  # pop the last file if it's length != files per
         remainder = chunks.pop(-1)
     else:
@@ -155,8 +155,9 @@ def get_files(input_dir, filetypes=None):
     # flatten list of list -> list and stringify Paths
     flattened_list = [str(item) for sublist in files for item in sublist]
     if not flattened_list:
-        raise Exception(f"""did not find any files at this path {input_dir},\
- please also ensure your files are in format {filetypes}""")
+        raise Exception(
+            f"did not find any files at this path {input_dir}, please also ensure your files are in format {filetypes}")
+    print(f"Found {len(flattened_list)} files in {input_dir}")
     return flattened_list
 
 
@@ -261,6 +262,11 @@ if __name__ == "__main__":
 
     if args.processes == 0:
         args.processes = cpu_count()
+
+    varargs = vars(args)
+    for k, v in varargs.items():
+        print(f"{k}: {v}")
+
     if args.processes > 1:
         results = create_tfrecords_mp(files, args)
     else:
