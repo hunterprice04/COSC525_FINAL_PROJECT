@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Union
 
-from src.data import Embeddings
+from src.data.Embeddings import Embeddings
 
 
 @dataclass

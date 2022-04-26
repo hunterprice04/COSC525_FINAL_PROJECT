@@ -33,5 +33,10 @@ class Sampling:
         return tf.random.categorical(logits=logits, num_samples=1)
 
     @staticmethod
+    def beam_search(logits):
+        # TODO: Implement this
+        print("# Unimplemented: beam_search")
+
+    @staticmethod
     def greedy_search(logits, *args, **kwargs):
         return np.argmax(logits, axis=-1)
