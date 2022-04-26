@@ -1,51 +1,45 @@
 import tensorflow as tf
-import tensorflow.keras as keras
-from keras.layers import Dense, Dropout, Softmax
-from tensorflow.keras.layers import SimpleRNN, Dense
-from tensorflow.keras.models import Sequential
-
-from src.utils.ModelUtils import ModelUtils
 
 
 class Transformer:
 
-    @staticmethod
-    def get_Transformer(config, training=True):
-        TR, VOCAB_SZ = config.TRAINING, len(config.EMBED)
-        BATCH_SZ = TR.BATCH_SIZE if training else 1
+    def __init__(self, training=True):
+        self.training = training
+        self.encoder = None
+        self.decoder = None
 
-        name = ModelUtils.create_model_name(config, 'RNN')
-        model = Sequential(name=name)
 
-        model.add(SimpleRNN(units=TR.HIDDEN_STATE_SIZE[0],
-                            batch_input_shape=(BATCH_SZ, None, VOCAB_SZ),
-                            return_sequences=True, stateful=True))
-        model.add(Dropout(TR.DROPOUT))
-        for HIDDEN_STATE_SIZE in TR.HIDDEN_STATE_SIZE[1:]:
-            model.add(SimpleRNN(units=HIDDEN_STATE_SIZE,
-                                return_sequences=True, stateful=True))
-            model.add(Dropout(TR.DROPOUT))
+class Encoder(tf.keras.layers.Layer):
 
-        model.add(Dense(VOCAB_SZ))
-        if training:
-            model.add(Softmax())
+    def __init__(self, hidden_size, num_heads, filter_size, dropout_rate, training=True):
+        super(Encoder, self).__init__()
+        print("Encoder")
+        self._training = training
+        self._hidden_size = hidden_size
+        self._num_heads = num_heads
+        self._filter_size = filter_size
+        self._dropout_rate = dropout_rate
 
-        opt = keras.optimizers.Adam(learning_rate=TR.LR)
-        loss = tf.losses.CategoricalCrossentropy()
-        model.compile(loss=loss,
-                      optimizer=opt, metrics=['acc'])
-        return model
+        # 1. Attention Layer (MultiHeadedAttention)
+        # 2. Layer Normalization
+        # 3. Dropout
 
-    @staticmethod
-    def model_test(config, *args, **kwargs):
-        VOCAB_SZ = len(config.EMBED)
-        model = Sequential()
-        model.add(SimpleRNN(100,
-                            stateful=True,
-                            return_sequences=True,
-                            batch_size=1,
-                            input_shape=(None, VOCAB_SZ)))
-        model.add(Dense(VOCAB_SZ, activation='softmax'))
-        opt = keras.optimizers.Adam(learning_rate=0.005)
-        model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['acc'])
-        return model
+    def call(self, x, training=True):
+        # TODO
+        return self.encoder
+
+
+class Decoder(tf.keras.layers.Layer):
+
+    def __init__(self, hidden_size, num_heads, filter_size, dropout_rate, training=True):
+        super(Decoder, self).__init__()
+        print("Encoder")
+        self._training = training
+        self._hidden_size = hidden_size
+        self._num_heads = num_heads
+        self._filter_size = filter_size
+        self._dropout_rate = dropout_rate
+
+    def call(self, x, training=True):
+        # TODO
+        return self.encoder
