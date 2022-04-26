@@ -4,6 +4,7 @@ from src.data.Vocab import Vocab
 
 
 class Embeddings(Vocab):
+    # TODO: Make this support Huggingface/TF tokenization and detokenization
 
     def __init__(self, text, label=None, encoding="utf-8", verbosity=1):
         super().__init__(text=text, label=label, encoding=encoding, verbosity=verbosity)
