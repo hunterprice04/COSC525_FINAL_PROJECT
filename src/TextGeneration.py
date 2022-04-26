@@ -1,7 +1,7 @@
 import os
 
-from pick import pick
 import tensorflow as tf
+from pick import pick
 from tqdm import tqdm
 
 from src import Sampling
