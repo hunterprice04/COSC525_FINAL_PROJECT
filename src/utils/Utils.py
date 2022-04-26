@@ -1,49 +1,50 @@
 import os
 
-import nvidia_smi
-from transformers import AutoTokenizer, TFAutoModelForCausalLM
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 
 class Utils:
 
     @staticmethod
-    def print_mem(prefix: str = ''):
-        nvidia_smi.nvmlInit()
-
-        deviceCount = nvidia_smi.nvmlDeviceGetCount()
-        for i in range(deviceCount):
-            handle = nvidia_smi.nvmlDeviceGetHandleByIndex(i)
-            info = nvidia_smi.nvmlDeviceGetMemoryInfo(handle)
-            print(prefix + "({:.2f}% free): {:.2f}GB (total), {:.2f}GB (free), {:.2f}GB (used)".format(
-                100 * info.free / info.total,
-                info.total / 1024 / 1024 / 1024,
-                info.free / 1024 / 1024 / 1024,
-                info.used / 1024 / 1024 / 1024
-            ))
-
-        nvidia_smi.nvmlShutdown()
+    def key_val(d):
+        return '_'.join(list(map(lambda x: f'{str(x[0])}-{str(x[1])}', d.__items__())))
 
     @staticmethod
-    def generate(model, tokenizer, text, max_length=512, temperature=0.7, top_k=50, top_p=0.9, print_mem=True):
-        model, tokenizer = Utils.get_model_and_tokanizer(model, tokenizer, print_mem)
-        if print_mem:
-            Utils.print_mem("# MEM BEFORE: ")
-        # Generate a sequence of tokens
-        input_ids = tokenizer.encode(text, return_tensors='pt')
+    def tensorflow_shutup():
+        """
+        Make Tensorflow less verbose
+        This function is taken from:
+        https://stackoverflow.com/questions/40426502/is-there-a-way-to-suppress-the-messages-tensorflow-prints
+        Thank you, @Adam Wallner for this awesome solution :)
+        """
+        try:
+            os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+            # noinspection PyPackageRequirements
+            import tensorflow as tf
+            from tensorflow.python.util import deprecation
+
+            tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+
+            # Monkey patching deprecation src to shut it up! Maybe good idea to disable this once after upgrade
+            # noinspection PyUnusedLocal
+            def deprecated(
+                    date, instructions, warn_once=True
+            ):  # pylint: disable=unused-argument
+                def deprecated_wrapper(func):
+                    return func
+
+                return deprecated_wrapper
+
+            deprecation.deprecated = deprecated
+
+        except ImportError:
+            pass
 
     @staticmethod
-    def print_outputs(outputs, strip=True):
-        print("=" * 80)
-        print(f"# OUTPUTS: len={len(outputs)}")
-        for i in range(len(outputs)):
-            oup = outputs[i]
-            if strip:
-                oup = oup.split("\n")
-                oup = [x for x in oup if x != '']
-                oup = "\n".join(oup)
-                # oup = oup.strip()
-            print("-" * 80)
-            print(f"# OUTPUT[{i}]: len={len(oup)}")
-            print(oup)
+    def in_notebook():
+        try:
+            from IPython import get_ipython
+            if 'IPKernelApp' not in get_ipython().config:  # pragma: no cover
+                return False
+        except (ImportError, AttributeError):
+            return False
+        return True

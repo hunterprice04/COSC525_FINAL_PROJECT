@@ -2,7 +2,7 @@ import os
 
 import tensorflow as tf
 
-from . import Logger
+from src.utils import Logger
 from .Embeddings import Embeddings
 
 

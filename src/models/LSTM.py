@@ -4,7 +4,7 @@ from keras.layers import Dense, Dropout, Softmax
 from keras.layers import LSTM as LSTM_layer
 from keras.models import Sequential
 
-from src.Utils import Utils
+from src.utils import ModelUtils
 
 
 class LSTM:
@@ -14,7 +14,7 @@ class LSTM:
         TR, VOCAB_SZ = config.TRAINING, len(config.EMBED)
         BATCH_SZ = TR.BATCH_SIZE if training else 1
 
-        name = Utils.create_model_name(config, 'LSTM')
+        name = ModelUtils.create_model_name(config, 'LSTM')
         model = Sequential(name=name)
 
         model.add(LSTM_layer(units=TR.HIDDEN_STATE_SIZE[0],

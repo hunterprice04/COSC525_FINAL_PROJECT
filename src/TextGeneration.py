@@ -4,10 +4,11 @@ from pick import pick
 import tensorflow as tf
 from tqdm import tqdm
 
-from src import Sampling, Logger
-from .Config import TrainingConfig
-from .TextDataset import TextDataset
-from .Utils import Utils
+from src import Sampling
+from src.data import TextDataset
+from src.utils import Logger
+from src.utils.Config import TrainingConfig
+from src.utils.ModelUtils import ModelUtils
 
 
 class TextGeneration(Logger.Wrapper):
@@ -81,7 +82,7 @@ class TextGeneration(Logger.Wrapper):
         data_shuf, data_batches = data.create_batches(BATCH_SIZE, BUFFER_SIZE)
 
         basedir = os.path.join(SAVE_DIR, data.label)
-        callbacks, tb_file_writer = Utils.create_callbacks(basedir, self.model_train, defaults=callbacks)
+        callbacks, tb_file_writer = ModelUtils.create_callbacks(basedir, self.model_train, defaults=callbacks)
 
         epoch, es_cnt, es_delta, es_patience, es_monitor, history, sy_gen = 0, 0, 0.0025, 10, 'loss', None, None
         tr_loop = tqdm(range(EPOCHS))

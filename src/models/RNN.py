@@ -4,7 +4,7 @@ from keras.layers import Dense, Dropout, Softmax
 from tensorflow.keras.layers import SimpleRNN, Dense
 from tensorflow.keras.models import Sequential
 
-from src.Utils import Utils
+from src.utils import ModelUtils
 
 
 class RNN:
@@ -14,7 +14,7 @@ class RNN:
         TR, VOCAB_SZ = config.TRAINING, len(config.EMBED)
         BATCH_SZ = TR.BATCH_SIZE if training else 1
 
-        name = Utils.create_model_name(config, 'RNN')
+        name = ModelUtils.create_model_name(config, 'RNN')
         model = Sequential(name=name)
 
         model.add(SimpleRNN(units=TR.HIDDEN_STATE_SIZE[0],

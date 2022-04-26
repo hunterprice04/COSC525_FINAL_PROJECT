@@ -1,11 +1,9 @@
-from transformers import AutoTokenizer, TFAutoModelForCausalLM
-
-from utils.Utils import Utils
+from src.utils.ModelUtils import ModelUtils
 
 
-class Model:
+class HFModel:
     def __init__(self, model_name, tokenizer_name=None, print_mem=True):
-        self.model, self.tokenizer = self.get_model_and_tokanizer(model_name, tokenizer_name, print_mem)
+        self.model, self.tokenizer = ModelUtils.get_model_and_tokanizer(model_name, tokenizer_name, print_mem)
 
     def generate(self, prompt=None, decode_outputs=True, **kwargs):
         """
@@ -62,23 +60,3 @@ class Model:
         print(f"Encoding prompt: len={len(prompt)}")
         print(prompt)
         return self.tokenizer.encode(prompt, return_tensors="tf")
-
-    @staticmethod
-    def get_model_and_tokanizer(model_name, tokenizer_name=None, print_mem=True):
-        if tokenizer_name is None:
-            print(f"W: Tokanizer wasn't specified explicitly, using same as model: {model_name}")
-            tokenizer_name = model_name
-
-        if print_mem:
-            Utils.print_mem("# MEM BEFORE: ")
-        # Initialize tokenizer
-        tokenizer_name = AutoTokenizer.from_pretrained(
-            tokenizer_name
-        )
-        # Download model and configuration from huggingface.co and cache.
-        model_name = TFAutoModelForCausalLM.from_pretrained(
-            model_name
-        )
-        if print_mem:
-            Utils.print_mem("# MEM AFTER: ")
-        return model_name, tokenizer_name

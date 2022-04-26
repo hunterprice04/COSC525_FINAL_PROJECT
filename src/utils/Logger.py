@@ -1,6 +1,3 @@
-import functools
-
-
 class Wrapper:
     def __init__(self, verbosity=1):
         self.verbosity = verbosity
