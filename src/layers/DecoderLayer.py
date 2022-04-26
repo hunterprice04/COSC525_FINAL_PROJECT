@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from src.attention.MultiHeadAttention import MultiHeadAttention
+from src.layers.MultiHeadAttention import MultiHeadAttention
 
 
 def PointWiseFFN(d_model, dff):

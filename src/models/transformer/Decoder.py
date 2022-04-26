@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from src.data.DataUtils import DataUtils
+from src.data.Utils import Utils
 from src.layers.DecoderLayer import DecoderLayer
 
 
@@ -13,7 +13,7 @@ class Decoder(tf.keras.layers.Layer):
         self.num_layers = num_layers
 
         self.embedding = tf.keras.layers.Embedding(target_vocab_size, d_model)
-        self.pos_encoding = DataUtils.positional_encoding(max_tokens, d_model)
+        self.pos_encoding = Utils.get_positional_encoding_old(max_tokens, d_model)
 
         self.dec_layers = []
         for _ in range(num_layers):

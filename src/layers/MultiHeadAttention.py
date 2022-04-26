@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from src.attention.Attention import ScaledDotProductAttention
+from src.layers.ScaledDotProductAttention import ScaledDotProductAttention
 
 
 class MultiHeadAttention(tf.keras.layers.Layer):

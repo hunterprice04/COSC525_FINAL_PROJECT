@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 def ScaledDotProductAttention(q, k, v, mask):
-    """Calculate the attention weights.
+    """Calculate the attentions weights.
     q, k, v must have matching leading dimensions.
     k, v must have matching penultimate dimension, i.e.: seq_len_k = seq_len_v.
     The mask has different shapes depending on its type(padding or look ahead)
@@ -19,7 +19,7 @@ def ScaledDotProductAttention(q, k, v, mask):
       output, attention_weights
     """
 
-    # TODO: Make call argument order consistent between attention layers
+    # TODO: Make call argument order consistent between attentions layers
 
     matmul_qk = tf.matmul(q, k, transpose_b=True)  # (..., seq_len_q, seq_len_k)
 

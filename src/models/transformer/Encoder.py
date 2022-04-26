@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from src.data.DataUtils import DataUtils
+from src.data.Utils import Utils
 from src.layers.EncoderLayer import EncoderLayer
 
 
@@ -13,7 +13,7 @@ class Encoder(tf.keras.layers.Layer):
         self.num_layers = num_layers
 
         self.embedding = tf.keras.layers.Embedding(input_vocab_size, d_model)
-        self.pos_encoding = DataUtils.positional_encoding(max_tokens, self.d_model)
+        self.pos_encoding = Utils.get_positional_encoding_old(max_tokens, self.d_model)
 
         self.enc_layers = [
             EncoderLayer(d_model=d_model, num_heads=num_heads, dff=dff, rate=rate)

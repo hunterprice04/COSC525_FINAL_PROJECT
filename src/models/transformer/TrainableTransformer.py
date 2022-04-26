@@ -3,13 +3,56 @@ import time
 import tensorflow as tf
 
 
-class TrainableTransformer:
+train_step_signature = [
+    tf.TensorSpec(shape=(None, None), dtype=tf.int32, name="Inputs"),
+    tf.TensorSpec(shape=(None, None), dtype=tf.int32, name="Targets")
+]
 
-    def __init__(self):
+
+class TrainableTransformer(tf.keras.Model):
+
+    def __init__(self, num_layers, d_model, num_heads,
+                 dropout_rate, dff, max_seq_len, vocab_size,
+                 optimizer="adam", learning_rate=1e-3, rev_embedding_projection=True,
+                 grad_clip=False, clip_value=1.0):
+        self.rev_embedding_projection = rev_embedding_projection
+        self.num_layers = num_layers
+        self.num_heads = num_heads
+        self.dff = dff
+        self.max_seq_len = max_seq_len
+        self.vocab_size = vocab_size
+        self.d_model = d_model
+        self.learning_rate = learning_rate
+        self.optimizer_t = optimizer
+        self.mirrored_strategy = None
+        self.grad_clip = grad_clip
+        self.clip_value = clip_value
+
+        self.embedding = EmbeddingLayer(
+            self.vocab_size, self.d_model)
+
+        self.pos_embedding = PositionEmbeddingLayer(
+            self.max_seq_len, self.d_model)
+
+        self.decoder_layers = [DecoderLayer(self.d_model, self.num_heads, self.dff)
+                               for _ in range(self.num_layers)]
+        self.layer_norm = LayerNormalization(self.d_model)
+
+        if not self.rev_embedding_projection:
+            self.output_layer = OutputLayer(self.vocab_size)
+
+        self.loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
+            from_logits=True, reduction='none')
+
+        self.accuracy_object = tf.keras.metrics.SparseCategoricalAccuracy(
+            name='accuracy')
+
         self.train_step_signature = [
-            tf.TensorSpec(shape=(None, None), dtype=tf.int64),
-            tf.TensorSpec(shape=(None, None), dtype=tf.int64),
-        ]
+            tf.TensorSpec(shape=(None, None), dtype=tf.int32)]
+
+    def call(self, x, training=True, past=None):
+        print("Unimplemented!")
+        return None
 
     def loss_function(self, real, pred):
         mask = tf.math.logical_not(tf.math.equal(real, 0))
@@ -68,3 +111,15 @@ class TrainableTransformer:
 
         train_loss(loss)
         train_accuracy(accuracy_function(tar_real, predictions))
+
+    def checkpoint_manager(self):
+        checkpoint_path = './checkpoints/train'
+        ckpt = tf.train.Checkpoint(transformer=transformer,
+                                   optimizer=optimizer)
+
+        ckpt_manager = tf.train.CheckpointManager(ckpt, checkpoint_path, max_to_keep=5)
+
+        # if a checkpoint exists, restore the latest checkpoint.
+        if ckpt_manager.latest_checkpoint:
+            ckpt.restore(ckpt_manager.latest_checkpoint)
+            print('Latest checkpoint restored!!')

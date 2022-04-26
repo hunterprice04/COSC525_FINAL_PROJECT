@@ -4,7 +4,7 @@ from transformers import AutoTokenizer, TFAutoModelForCausalLM
 
 from src.utils.Config import Config
 from src.utils.GPUtils import GPUtils
-
+import tensorflow as tf
 
 class ModelUtils:
 

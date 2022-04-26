@@ -1,4 +1,4 @@
-from src.utils.ModelUtils import ModelUtils
+from src.ModelUtilspy import ModelUtils
 
 
 class HFModel:

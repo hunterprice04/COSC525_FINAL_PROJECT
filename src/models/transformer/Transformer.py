@@ -1,8 +1,23 @@
 import tensorflow as tf
 
-from src.data.Masks import Masks
+from src.data.Utils import Utils
 from src.models.transformer.Decoder import Decoder
 from src.models.transformer.Encoder import Encoder
+
+
+def get_sample_transformer():
+    sample_transformer = Transformer(
+        num_layers=2, d_model=512, num_heads=8, dff=2048,
+        input_vocab_size=8500, target_vocab_size=8000)
+
+    temp_input = tf.random.uniform((64, 38), dtype=tf.int64, minval=0, maxval=200)
+    temp_target = tf.random.uniform((64, 36), dtype=tf.int64, minval=0, maxval=200)
+
+    fn_out, _ = sample_transformer([temp_input, temp_target], training=False)
+
+    print(fn_out.shape) # (batch_size, tar_seq_len, target_vocab_size)
+
+    return sample_transformer
 
 
 class Transformer(tf.keras.Model):
@@ -34,22 +49,21 @@ class Transformer(tf.keras.Model):
         enc_output = self.encoder(inp, training, padding_mask)  # (batch_size, inp_seq_len, d_model)
 
         # dec_output.shape == (batch_size, tar_seq_len, d_model)
-        dec_output, attention_weights = self.decoder(
-            tar, enc_output, training, look_ahead_mask, padding_mask)
+        dec_output, attention_weights = self.decoder(tar, enc_output, training, look_ahead_mask, padding_mask)
 
         final_output = self.final_layer(dec_output)  # (batch_size, tar_seq_len, target_vocab_size)
 
         return final_output, attention_weights
 
     def create_masks(self, inp, tar):
-        # Encoder padding mask (Used in the 2nd attention block in the decoder too.)
-        padding_mask = Masks.create_padding_mask(inp)
+        # Encoder padding mask (Used in the 2nd attentions block in the decoder too.)
+        padding_mask = Utils.create_padding_mask(inp)
 
-        # Used in the 1st attention block in the decoder.
+        # Used in the 1st attentions block in the decoder.
         # It is used to pad and mask future tokens in the input received by
         # the decoder.
-        look_ahead_mask = Masks.create_look_ahead_mask(tf.shape(tar)[1])
-        dec_target_padding_mask = Masks.create_padding_mask(tar)
+        look_ahead_mask = Utils.create_look_ahead_mask(tf.shape(tar)[1])
+        dec_target_padding_mask = Utils.create_padding_mask(tar)
         look_ahead_mask = tf.maximum(dec_target_padding_mask, look_ahead_mask)
 
         return padding_mask, look_ahead_mask

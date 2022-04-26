@@ -4,7 +4,7 @@ from keras.layers import Dense, Dropout, Softmax
 from tensorflow.keras.layers import SimpleRNN, Dense
 from tensorflow.keras.models import Sequential
 
-from src.utils.ModelUtils import ModelUtils
+from src.models.ModelUtils import ModelUtils
 
 
 class RNN:
