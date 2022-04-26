@@ -1,4 +1,3 @@
-.idea
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
@@ -158,10 +157,14 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 
+.idea
+.vscode
+.DS_Store
+
 encoder.pkl
 decoder.pkl
 
-.DS_Store
-
 *.zst
 *.zst.bak
+
+gpt/**/*
