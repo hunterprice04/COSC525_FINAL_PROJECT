@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from src import Logger
+from src.utils import Logger
 
 
 class Vocab(Logger.Wrapper):

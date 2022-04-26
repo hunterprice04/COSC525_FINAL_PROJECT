@@ -10,7 +10,6 @@ class GPUtils:
     @staticmethod
     def print_usage():
         global _GPU
-        print('Checking for Nvidia GPU\n')
         _GPU = GPUtils._check_gpu()
         if _GPU:
             GPUtils._print_gpu_usage()
@@ -33,7 +32,7 @@ class GPUtils:
             handle = nvidia_smi.nvmlDeviceGetHandleByIndex(i)
             info = nvidia_smi.nvmlDeviceGetMemoryInfo(handle)
             if not detailed:
-                print(f'GPU-{i}: GPU-Memory: {GPUtils._bytes_to_megabytes(info.used)}/'
+                print(f'GPU-{i}: {GPUtils._bytes_to_megabytes(info.used)}/'
                       f'{GPUtils._bytes_to_megabytes(info.total)} MB')
             else:
                 print(prefix + "({:.2f}% free): {:.2f}GB (total), {:.2f}GB (free), {:.2f}GB (used)".format(

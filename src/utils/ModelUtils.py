@@ -2,7 +2,8 @@ import os
 
 from transformers import AutoTokenizer, TFAutoModelForCausalLM
 
-from . import Config, GPUtils
+from src.utils.Config import Config
+from src.utils.GPUtils import GPUtils
 
 
 class ModelUtils:

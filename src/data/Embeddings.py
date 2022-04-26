@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from .Vocab import Vocab
+from src.data import Vocab
 
 
 class Embeddings(Vocab):

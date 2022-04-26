@@ -2,8 +2,8 @@ import os
 
 import tensorflow as tf
 
+from src.data.Embeddings import Embeddings
 from src.utils import Logger
-from .Embeddings import Embeddings
 
 
 class TextDataset(Logger.Wrapper):
