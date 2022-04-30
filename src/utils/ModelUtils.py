@@ -30,11 +30,11 @@ class ModelUtils:
         tb_file_writer = tf.summary.create_file_writer(path_tb)
         callbacks = [] if defaults is None else defaults
         callbacks.append(tf.keras.callbacks.CSVLogger(path_csv, separator=",", append=True))
-        callbacks.append(tf.keras.callbacks.ModelCheckpoint(path_ckp,
-                                                            monitor='loss',
-                                                            save_best_only=True,
-                                                            mode='auto',
-                                                            verbose=0))
+        # callbacks.append(tf.keras.callbacks.ModelCheckpoint(path_ckp,
+        #                                                     monitor='loss',
+        #                                                     save_best_only=True,
+        #                                                     mode='auto',
+        #                                                     verbose=0))
         os.makedirs(dir_models, exist_ok=True)
         return callbacks, tb_file_writer
 

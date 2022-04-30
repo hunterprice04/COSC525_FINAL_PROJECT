@@ -1,11 +1,14 @@
+import json
 import os
+import pickle
+from math import inf
 
 import tensorflow as tf
 from pick import pick
 from tqdm import tqdm
 
-from src import Sampling
-from src.data import TextDataset
+from src.Sampling import Sampling
+from src.data.TextDataset import TextDataset
 from src.utils import Logger
 from src.utils.Config import TrainingConfig
 from src.utils.ModelUtils import ModelUtils
@@ -15,7 +18,7 @@ class TextGeneration(Logger.Wrapper):
 
     def __init__(self, config, model_func, verbosity=1):
         super().__init__(verbosity)
-        self.embed = config.EMBED
+        self.config = config
         if model_func is None:
             raise ValueError("# [TextGeneration]: model_func argument cannot be None.")
         self.print_1(f"# [TextGeneration]:\tmodel_func={model_func.__name__}\tverbosity={verbosity}")
@@ -36,7 +39,7 @@ class TextGeneration(Logger.Wrapper):
         if seed is not None:
             tf.keras.utils.set_random_seed(0)
 
-        chars_oh = tf.expand_dims(self.embed.to_onehot(prompt), 0)
+        chars_oh = tf.expand_dims(self.config.EMBED.to_onehot(prompt), 0)
         self.print_1(f"# [TextGeneration - predict]:\tprompt_len={len(prompt)}\tnum_chars={pred_len}",
                      verbosity=verbosity)
         self.print_2("chars_oh shape:", chars_oh.shape, verbosity=verbosity)
@@ -49,9 +52,9 @@ class TextGeneration(Logger.Wrapper):
 
         self.print_3("chars_oh shape:", chars_oh.shape, verbosity=verbosity)
         if output_as == "string":
-            return self.embed.to_string(chars_oh)
+            return self.config.EMBED.to_string(chars_oh)
         elif output_as == "tensor":
-            return self.embed.to_tfstring(chars_oh)
+            return self.config.EMBED.to_tfstring(chars_oh)
 
         return chars_oh
 
@@ -62,19 +65,22 @@ class TextGeneration(Logger.Wrapper):
         logits = self.model_pred.predict(chars_oh, batch_size=1)[None, :, -1]
         for _ in gen_loop:
             sampled_id = sampling_method(logits=logits, temp=temp)
-            self.print_2(f"\t => SAMPLED: {self.embed.to_tfstring(sampled_id)}", verbosity=verbosity)
+            self.print_2(f"\t => SAMPLED: {self.config.EMBED.to_tfstring(sampled_id)}", verbosity=verbosity)
             if verbosity:
                 gen_loop.set_description("Generating...")
-                gen_loop.set_postfix({"char": self.embed.to_tfstring(sampled_id).numpy()})
+                gen_loop.set_postfix({"char": self.config.EMBED.to_tfstring(sampled_id).numpy()})
 
-            sampled_oh = self.embed.to_onehot(sampled_id)
+            sampled_oh = self.config.EMBED.to_onehot(sampled_id)
             self.print_3(f"sampled_oh shape: {sampled_oh.shape}", verbosity=verbosity)
             chars_oh = tf.concat([chars_oh, sampled_oh], axis=1)
             logits = self.model_pred.predict(sampled_oh, batch_size=1)
         return chars_oh
 
     def train(self, data: TextDataset, config: TrainingConfig = None, callbacks=None):
+        # sourcery no-metrics
         self.print_1(f"# [TextGeneration - train]:\t{config}")
+        if config is None:
+            config = self.config.TRAINING
 
         SAVE_DIR, EPOCHS, BATCH_SIZE, BUFFER_SIZE = config.SAVE_DIR, config.EPOCHS, config.BATCH_SIZE, config.BUFFER_SIZE
         PRED_EVERY, PRED_LEN, PRED_TEMP = config.PRED_EVERY, config.PRED_LEN, config.PRED_TEMP
@@ -84,11 +90,12 @@ class TextGeneration(Logger.Wrapper):
         basedir = os.path.join(SAVE_DIR, data.label)
         callbacks, tb_file_writer = ModelUtils.create_callbacks(basedir, self.model_train, defaults=callbacks)
 
-        epoch, es_cnt, es_delta, es_patience, es_monitor, history, sy_gen = 0, 0, 0.0025, 10, 'loss', None, None
+        epoch, es_cnt, es_delta, es_patience, es_monitor, history, sy_gen = 0, 0, 0.001, 10, 'loss', None, None
         tr_loop = tqdm(range(EPOCHS))
         self.history = {
             'loss': [],
             'acc': [],
+            'best_loss': [],
             'gen': []
         }
 
@@ -114,6 +121,16 @@ class TextGeneration(Logger.Wrapper):
             # save histories
             self.history['loss'].append(history.history['loss'][-1])
             self.history['acc'].append(history.history['acc'][-1])
+            # should_save = False
+            res = inf
+            if len(self.history['best_loss']) > 0:
+                if history.history['loss'][-1] < self.history['best_loss'][-1]:
+                    res = history.history['loss'][-1]
+                    # should_save = True
+                else:
+                    res = self.history['best_loss'][-1]
+
+            self.history['best_loss'].append(res)
             self.history['gen'].append(sy_gen.numpy())
 
             # Implement early stopping based on the min delta, patience and monitor
@@ -125,12 +142,17 @@ class TextGeneration(Logger.Wrapper):
             postfix = {
                 "loss": round(self.history['loss'][-1], 4),
                 "acc": round(self.history['acc'][-1], 4),
+                "best_loss": self.history['best_loss'][-1],
                 "gen": self.history['gen'][-1],
                 "es": f"{es_cnt}/{es_patience}"
             }
             tr_loop.set_postfix(postfix)
 
             self.tensorboard_log(postfix, tb_file_writer, epoch)
+
+            # if should_save:
+            #     self.model_pred.set_weights(self.model_train.get_weights())
+            #     self.save_model(basedir)
 
             if es_cnt >= es_patience:
                 print("=> Early stopping...")
@@ -160,7 +182,7 @@ class TextGeneration(Logger.Wrapper):
         sample_predictions = []
         for x, y in dataset.take(num_samples):
             if not silent:
-                print(f"Prompt: {self.embed.to_tfstring(x)}")
+                print(f"Prompt: {self.config.EMBED.to_tfstring(x)}")
             gen = self.predict(x, Sampling.random_sampling, temp=temp, pred_len=pred_len,
                                output_as="tensor", verbosity=0)
             if not silent:
