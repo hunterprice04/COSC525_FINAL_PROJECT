@@ -4,13 +4,13 @@ from keras.layers import Dense, Dropout, Softmax
 from tensorflow.keras.layers import SimpleRNN, Dense
 from tensorflow.keras.models import Sequential
 
-from src.utils.ModelUtils import ModelUtils
+from src.models.ModelUtils import ModelUtils
 
 
-class Transformer:
+class RNN:
 
     @staticmethod
-    def get_Transformer(config, training=True):
+    def get_RNN(config, training=True):
         TR, VOCAB_SZ = config.TRAINING, len(config.EMBED)
         BATCH_SZ = TR.BATCH_SIZE if training else 1
 

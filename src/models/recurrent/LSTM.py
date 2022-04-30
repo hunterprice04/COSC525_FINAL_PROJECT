@@ -4,7 +4,7 @@ from keras.layers import Dense, Dropout, Softmax
 from keras.layers import LSTM as LSTM_layer
 from keras.models import Sequential
 
-from src.utils.ModelUtils import ModelUtils
+from src.models.ModelUtils import ModelUtils
 
 
 class LSTM:

@@ -11,7 +11,7 @@ from src.Sampling import Sampling
 from src.data.TextDataset import TextDataset
 from src.utils import Logger
 from src.utils.Config import TrainingConfig
-from src.utils.ModelUtils import ModelUtils
+from src.ModelUtilspy import ModelUtils
 
 
 class TextGeneration(Logger.Wrapper):
