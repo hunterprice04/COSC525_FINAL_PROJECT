@@ -44,6 +44,10 @@
   - Random Search with Temperature
   - Beam Search - will likely perform better
 
+## Loss Functions
+- An Edit-Invariant Sequence Loss for Text Generation
+  - https://arxiv.org/pdf/2106.15078.pdf
+
 ## Optimizers:
 - Adam Weight Decay
   - https://huggingface.co/docs/transformers/main/en/main_classes/optimizer_schedules#transformers.AdamWeightDecay
