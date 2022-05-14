@@ -1,5 +1,63 @@
-## CS525 Final Project
+# CS525 Final Project
+---
 
+## Setting up local fork of HuggingFace's transformers library
+1. Retrieve submodule contents
+
+**First time setup (if it has not been added to the repo yet)**
+```bash
+$ pwd
+> /../COSC525_FINAL_PROJECT/
+$ git submodule add --force git@github.com:hunterprice04/transformers.git
+$ cd transformers
+$ git remote add upstream https://github.com/huggingface/transformers.git
+```
+**User set up (if already added to repo)**
+```bash
+$ pwd
+> /../COSC525_FINAL_PROJECT/
+$ git submodule update --init --recursive
+$ cd transformers
+$ git remote add upstream https://github.com/huggingface/transformers.git
+```
+
+2. Set up your environment
+**pip**
+```bash
+$ pwd
+> /../COSC525_FINAL_PROJECT/transformers
+$ python -m venv .env
+$ source .env/bin/activate
+$ python3 -m pip install -e .  
+cd ..
+```
+**conda**
+```bash
+$ pwd
+> /../COSC525_FINAL_PROJECT/transformers
+$ conda create -n [your_env_name] 
+$ conda activate [your_env_name]
+$ python3 -m pip install -e .  
+cd ..
+```
+
+3. Install requirements
+**pip**
+```bash
+pip install -r requirements.txt
+```
+**conda**
+```bash
+conda install --file requirements.txt
+```
+
+4. Test your installation with *test_transformers_installation.py*
+
+```bash
+python3 test_installation.py
+```
+
+---
 ## TODO:
 
 - Find papers of smaller models to compare results
