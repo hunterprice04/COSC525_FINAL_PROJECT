@@ -8,6 +8,7 @@
 ```bash
 $ pwd
 > /../COSC525_FINAL_PROJECT/
+$ mkdir submodules; cd submodules
 $ git submodule add --force git@github.com:hunterprice04/transformers.git
 $ cd transformers
 $ git remote add upstream https://github.com/huggingface/transformers.git
@@ -16,6 +17,7 @@ $ git remote add upstream https://github.com/huggingface/transformers.git
 ```bash
 $ pwd
 > /../COSC525_FINAL_PROJECT/
+$ mkdir submodules; cd submodules
 $ git submodule update --init --recursive
 $ cd transformers
 $ git remote add upstream https://github.com/huggingface/transformers.git
@@ -25,7 +27,7 @@ $ git remote add upstream https://github.com/huggingface/transformers.git
 **pip**
 ```bash
 $ pwd
-> /../COSC525_FINAL_PROJECT/transformers
+> /../COSC525_FINAL_PROJECT/submodules/transformers
 $ python -m venv .env
 $ source .env/bin/activate
 $ python3 -m pip install -e .  
@@ -34,27 +36,33 @@ cd ..
 **conda**
 ```bash
 $ pwd
-> /../COSC525_FINAL_PROJECT/transformers
+> /../COSC525_FINAL_PROJECT/submodules/transformers
 $ conda create -n [your_env_name] 
 $ conda activate [your_env_name]
 $ python3 -m pip install -e .  
-cd ..
+cd ../..
 ```
 
 3. Install requirements
 **pip**
 ```bash
-pip install -r requirements.txt
+$ pwd
+> /../COSC525_FINAL_PROJECT/
+$ pip install -r requirements.txt
 ```
 **conda**
 ```bash
-conda install --file requirements.txt
+$ pwd
+> /../COSC525_FINAL_PROJECT/
+$ conda install --file requirements.txt
 ```
 
 4. Test your installation with *test_transformers_installation.py*
 
 ```bash
-python3 test_installation.py
+$ pwd
+> /../COSC525_FINAL_PROJECT/
+$ python3 test_transformers_installation.py
 ```
 
 ---
