@@ -1,42 +1,140 @@
-import numpy as np
+import sys
 import tensorflow as tf
+from typing import Union
+from .tokenize_utils import gen_n_sent
+
+
+class SamplingEnums:
+    """
+    Enums for sampling methods
+    """
+    ALL = list(range(0, 6))
+    GREEDY = 0
+    BEAM = 1
+    RANDOM = 2
+    TOP_K = 3
+    TOP_P = 4
+    SAMPLE = 5
 
 
 class Sampling:
-    """
-    https://towardsdatascience.com/decoding-strategies-that-you-need-to-know-for-response-generation-ba95ee0faadc
-    """
 
-    @staticmethod
-    def random_sampling(logits, temp):
-        if tf.rank(logits) > 2:
-            logits = tf.squeeze(tf.squeeze(logits, axis=0), 0)
+    def __init__(self, model):
+        self.model = model
+        self.sample_dict = {
+            'greedy': self.greedy,
+            'beam_search': self.beam_search,
+            'random': self.random,
+            'top_k': self.top_k,
+            'top_p': self.top_p,
+            'sample': self.sample
+        }
+        self.sample_list = list(self.sample_dict.values())
 
-        logits = tf.cast(logits, tf.float64)
-        conditional_probability = logits / temp
-        exp_preds = tf.exp(conditional_probability)
-        conditional_probability = exp_preds / tf.reduce_sum(exp_preds)
+    def greedy(self, input_ids, max_length=50, **kwargs):
+        return self.model.generate(
+            input_ids,
+            max_length=max_length,
+            **kwargs)
 
-        probas = np.random.multinomial(1, conditional_probability, 1)
-        return tf.expand_dims(probas, 0)
+    def beam_search(self,
+                    input_ids,
+                    max_length=50,
+                    num_beams=5,
+                    early_stopping=True,
+                    **kwargs):
+        return self.model.generate(
+            input_ids,
+            max_length=max_length,
+            num_beams=num_beams,
+            early_stopping=early_stopping,
+            **kwargs
+        )
 
-    @staticmethod
-    def random_sampling_bugged(logits, temp):
-        if tf.rank(logits) > 2:
-            logits = tf.squeeze(logits, axis=0)
-        logits = tf.cast(logits, tf.float64)
-        if temp is not None:
-            logits /= temp
+    def random(self, input_ids,
+               seed=None,
+               do_sample=True,
+               max_length=50,
+               temperature=0.01,
+               **kwargs):
+        if seed is not None:
+            tf.random.set_seed(seed)
+        return self.model.generate(
+            input_ids,
+            do_sample=do_sample,
+            max_length=max_length,
+            top_k=0,
+            temperature=temperature,
+            **kwargs
+        )
 
-        logits = tf.nn.softmax(logits, axis=1)
-        logits = tf.math.log(logits)
-        return tf.random.categorical(logits=logits, num_samples=1)
+    def top_k(self, input_ids,
+              seed=None,
+              do_sample=True,
+              max_length=50,
+              top_k=0,
+              **kwargs):
+        if seed is not None:
+            tf.random.set_seed(seed)
+        return self.model.generate(
+            input_ids,
+            do_sample=do_sample,
+            max_length=max_length,
+            top_k=top_k,
+            **kwargs
+        )
 
-    @staticmethod
-    def beam_search(logits):
-        # TODO: Implement this
-        print("# Unimplemented: beam_search")
+    def top_p(self, input_ids,
+              seed=None,
+              do_sample=True,
+              max_length=50,
+              top_p=0.92,
+              **kwargs):
+        if seed is not None:
+            tf.random.set_seed(seed)
+        return self.model.generate(
+            input_ids,
+            do_sample=do_sample,
+            max_length=max_length,
+            top_k=0,
+            top_p=top_p,
+            **kwargs
+        )
 
-    @staticmethod
-    def greedy_search(logits, *args, **kwargs):
-        return np.argmax(logits, axis=-1)
+    def sample(self, input_ids, **kwargs):
+        """
+        This allows the user to manually specify any type of sampling manually
+        """
+        return self.model.generate(input_ids, kwargs)
+
+    def print(self, input_ids, sample_type: Union[str | int], tokenizer, quiet=False, **kwargs):
+        if isinstance(sample_type, str):
+            sample_func = self.sample_dict[sample_type]
+        elif isinstance(sample_type, int):
+            sample_func = self.sample_list[sample_type]
+        else:
+            print('USAGE: bad sample_type')
+            sys.exit()
+
+        generated = sample_func(input_ids, **kwargs)
+        generated = list(map(lambda x: tokenizer.decode(x, skip_special_tokens=True), generated))
+
+        if not quiet:
+            for i, output in enumerate(generated):
+                print('-' * 100)
+                print("{}: {}".format(i, output))
+
+        return generated
+
+
+def generate_all_sampling(sampling, input_ids, tokenizer, num_gen=1, seed=None):
+    greedy = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.GREEDY, tokenizer, max_length=50, quiet=True),
+                        num_gen)
+    beam = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.BEAM, tokenizer, quiet=True), num_gen)
+    random = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.RANDOM, tokenizer, seed=seed, quiet=True),
+                        num_gen)
+    top_k = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.TOP_K, tokenizer, seed=seed, quiet=True),
+                       num_gen)
+    top_p = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.TOP_P, tokenizer, seed=seed, quiet=True),
+                       num_gen)
+    return greedy, beam, random, top_k, top_p
