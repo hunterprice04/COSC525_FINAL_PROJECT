@@ -5,7 +5,7 @@ from datasets import load_metric
 # https://huggingface.co/metrics
 
 # https://github.com/huggingface/datasets/tree/master/metrics/bleu
-blue = load_metric("bleu")
+bleu = load_metric("bleu")
 
 # https://github.com/huggingface/datasets/tree/master/metrics/rouge
 rouge = load_metric("rouge")
@@ -27,8 +27,8 @@ class Metrics:
         :return:
         """
 
-        bleu_score = bleu.compute(reference_sentences, evaluated_sentences)
-        rouge_score = rouge.compute(reference_sentences, evaluated_sentences)
-        perplexity_score = perplexity.compute(reference_sentences, evaluated_sentences)
+        bleu_score = bleu.compute(predictions=evaluated_sentences, references=reference_sentences)
+        rouge_score = rouge.compute(predictions=evaluated_sentences, references=reference_sentences)
+        perplexity_score = perplexity.compute(input_texts=evaluated_sentences, model_id='gpt2')
 
         return bleu_score, rouge_score, perplexity_score
