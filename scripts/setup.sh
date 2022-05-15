@@ -8,14 +8,14 @@ if [[ $path == *scripts ]]; then
     path=`dirname $path`;
 fi
 echo "Current path:      $path"
+requirements="$path/requirements.txt"
+echo "Requirements file: $requirements"
 submodules="$path/submodules"
 transformers="$submodules/transformers"
 datasets="$submodules/datasets"
 echo "Submodules path:   $submodules"
 echo "Transformers path: $transformers"
 echo "Datasets path:     $datasets"
-requirements="$path/requirements.txt"
-echo "Requirements file: $requirements"
 echo '--------------------------------------------------------------------------------'
 
 # init the submodules
@@ -23,8 +23,11 @@ echo 'Setting up submodules...'
 git submodule update --init --recursive;
 cd $transformers
 git remote add upstream https://github.com/huggingface/transformers.git
+git checkout main
+git pull origin main
 cd $datasets
 git remote add upstream https://github.com/huggingface/datasets.git
+git pull upstream master
 cd $path
 echo '--------------------------------------------------------------------------------'
 
@@ -44,5 +47,5 @@ echo '--------------------------------------------------------------------------
 
 echo 'Done!'
 echo 'Please activate the (huggingface) environment before running the project:'
-echo 'conda activate huggingface'
+echo '$ conda activate huggingface'
 echo '================================================================================'
