@@ -1,6 +1,8 @@
 import sys
 import tensorflow as tf
 from typing import Union
+from .tokenize_utils import gen_n_sent
+
 
 class SamplingEnums:
     """
@@ -28,6 +30,7 @@ class Sampling:
             'sample': self.sample
         }
         self.sample_list = list(self.sample_dict.values())
+
     def greedy(self, input_ids, max_length=50, **kwargs):
         return self.model.generate(
             input_ids,
@@ -104,7 +107,7 @@ class Sampling:
         """
         return self.model.generate(input_ids, kwargs)
 
-    def print(self, input_ids, sample_type:Union[str|int], tokenizer, quiet=False, **kwargs):
+    def print(self, input_ids, sample_type: Union[str | int], tokenizer, quiet=False, **kwargs):
         if isinstance(sample_type, str):
             sample_func = self.sample_dict[sample_type]
         elif isinstance(sample_type, int):
@@ -114,7 +117,7 @@ class Sampling:
             sys.exit()
 
         generated = sample_func(input_ids, **kwargs)
-        generated = list(map(lambda x:tokenizer.decode(x, skip_special_tokens=True), generated))
+        generated = list(map(lambda x: tokenizer.decode(x, skip_special_tokens=True), generated))
 
         if not quiet:
             for i, output in enumerate(generated):
@@ -122,3 +125,16 @@ class Sampling:
                 print("{}: {}".format(i, output))
 
         return generated
+
+
+def generate_all_sampling(sampling, input_ids, tokenizer, num_gen=1, seed=None):
+    greedy = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.GREEDY, tokenizer, max_length=50, quiet=True),
+                        num_gen)
+    beam = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.BEAM, tokenizer, quiet=True), num_gen)
+    random = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.RANDOM, tokenizer, seed=seed, quiet=True),
+                        num_gen)
+    top_k = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.TOP_K, tokenizer, seed=seed, quiet=True),
+                       num_gen)
+    top_p = gen_n_sent(lambda: sampling.print(input_ids, SamplingEnums.TOP_P, tokenizer, seed=seed, quiet=True),
+                       num_gen)
+    return greedy, beam, random, top_k, top_p
