@@ -1,3 +1,6 @@
 [submodule "submodules/transformers"]
 	path = submodules/transformers
 	url = git@github.com:hunterprice04/transformers.git
+[submodule "submodules/datasets"]
+	path = submodules/datasets
+	url = git@github.com:hunterprice04/datasets.git
