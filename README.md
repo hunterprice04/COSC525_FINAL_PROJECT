@@ -2,6 +2,17 @@
 ---
 
 ## Setting up local fork of HuggingFace's transformers library
+
+### The Automated Way (for conda only)
+```bash
+$ pwd
+> /../COSC525_FINAL_PROJECT/
+$ chmod +x ./scripts/setup.sh
+$ ./scripts/setup.sh
+$ conda activate huggingface
+```
+
+### The Manual Way:
 1. Retrieve submodule contents
 
 **First time setup (if it has not been added to the repo yet)**
@@ -20,7 +31,7 @@ $ git remote add upstream https://github.com/huggingface/datasets.git
 ```bash
 $ pwd
 > /../COSC525_FINAL_PROJECT/
-$ mkdir submodules; cd submodules
+$ cd submodules
 $ git submodule update --init --recursive
 $ cd transformers
 $ git remote add upstream https://github.com/huggingface/transformers.git
@@ -70,7 +81,7 @@ $ conda install --file requirements.txt
 ```bash
 $ pwd
 > /../COSC525_FINAL_PROJECT/
-$ python3 test_transformers_installation.py
+$ python3 tests/test_transformers_installation.py
 ```
 
 ---
