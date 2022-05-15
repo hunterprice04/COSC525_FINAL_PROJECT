@@ -10,8 +10,11 @@ $ pwd
 > /../COSC525_FINAL_PROJECT/
 $ mkdir submodules; cd submodules
 $ git submodule add --force git@github.com:hunterprice04/transformers.git
+$ git submodule add --force git@github.com:hunterprice04/datasets.git
 $ cd transformers
 $ git remote add upstream https://github.com/huggingface/transformers.git
+$ cd ../datasets
+$ git remote add upstream https://github.com/huggingface/datasets.git 
 ```
 **User set up (if already added to repo)**
 ```bash
@@ -21,6 +24,8 @@ $ mkdir submodules; cd submodules
 $ git submodule update --init --recursive
 $ cd transformers
 $ git remote add upstream https://github.com/huggingface/transformers.git
+$ cd ../datasets
+$ git remote add upstream https://github.com/huggingface/datasets.git 
 ```
 
 2. Set up your environment
@@ -28,20 +33,23 @@ $ git remote add upstream https://github.com/huggingface/transformers.git
 ```bash
 $ pwd
 > /../COSC525_FINAL_PROJECT/submodules/transformers
+$ cd ../../
 $ python -m venv .env
 $ source .env/bin/activate
-$ python3 -m pip install -e .  
-cd ..
+$ python3 -m pip install -e ./submodules/transformers
+$ python3 -m pip install -e ./submodules/datasets
 ```
 **conda**
 ```bash
 $ pwd
 > /../COSC525_FINAL_PROJECT/submodules/transformers
+$ cd ../../
 $ conda create -n [your_env_name] 
 $ conda activate [your_env_name]
-$ python3 -m pip install -e .  
-cd ../..
-```
+$ python3 -m pip install -e ./submodules/transformers
+$ python3 -m pip install -e ./submodules/datasets
+``` 
+
 
 3. Install requirements
 **pip**
