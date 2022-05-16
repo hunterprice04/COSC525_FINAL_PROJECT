@@ -2,7 +2,7 @@ import tqdm
 import pandas as pd
 from datasets import load_metric
 from .tokenize_utils import tokenize, get_n_random_sentences, lword_to_lstr, to_bleu_references
-from .sampling import generate_all_sampling
+from .Sampling import generate_all_sampling
 # AVAILABLE METRICS
 # https://huggingface.co/metrics
 

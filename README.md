@@ -85,6 +85,27 @@ $ python3 tests/test_transformers_installation.py
 ```
 
 ---
+## Altered/Added Files In Transformers Repo
+
+- docs/source/en/model_doc/small-transformer.mdx
+- src/transformers/__init__.py
+- src/transformers/models/__init__.py
+- src/transformers/models/auto/configuration_auto.py
+- src/transformers/models/auto/modeling_auto.py
+- src/transformers/models/auto/modeling_tf_auto.py
+- src/transformers/models/auto/tokenization_auto.py
+- src/transformers/models/small_transformer/__init__.py
+- src/transformers/models/small_transformer/configuration_small_transformer.py
+- src/transformers/models/small_transformer/convert_small_transformer_original_tf_checkpoint_to_pytorch.py
+- src/transformers/models/small_transformer/modeling_small_transformer.py
+- src/transformers/models/small_transformer/modeling_tf_small_transformer.py
+- tests/models/small_transformer/__init__.py
+- tests/models/small_transformer/test_modeling_small_transformer.py
+- tests/models/small_transformer/test_modeling_tf_small_transformer.py
+
+
+
+---
 ## TODO:
 
 - Find papers of smaller models to compare results
