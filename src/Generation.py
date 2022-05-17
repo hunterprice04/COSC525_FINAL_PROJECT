@@ -117,7 +117,7 @@ class Generator:
                 x = np.array([x])
                 y, _ = self.model.predict(x, verbose=0)
 
-                sample_token = sampling_method(self, logits=y[0][sample_index], *args, **kwargs)
+                sample_token = sampling_method(logits=y[0][sample_index], *args, **kwargs)
                 tokens_generated.append(sample_token)
                 prompt_tokens.append(sample_token)
                 num_tokens_generated = len(tokens_generated)
@@ -161,7 +161,7 @@ class GenerationCallback(tf.keras.callbacks.Callback):
             return
         generator = Generator(self.model, self.seq_len, self.vocab)
         for name, f in generator.sampling_funcs.items():
-            txt = generator.generate(self.prompt_txt, self.max_tokens, f)
+            txt = generator.generate(self.prompt_txt, self.max_tokens, lambda *args, **kwargs: f(generator, *args, **kwargs))
             print(f"\n{name} generated:\n{txt}\n")
             if self.tb_file_writer is not None:
                 self.tb_file_writer.text(name, txt, epoch)
