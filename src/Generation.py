@@ -42,10 +42,24 @@ class Generator:
         preds = np.asarray(preds).astype("float32")
         return np.random.choice(indices, p=preds)
 
-    # def beam_search(self, logits):
-    #     from tensor2tensor.utils.beam_search import beam_search
-    #     beam_search()
-    #     pass
+    def beam_search(self, logits, initial_ids=None, beam_size=2, alpha=0.6, *args, **kwargs):
+        logits = tf.constant(logits[None,:], dtype=tf.float32)
+        initial_ids = tf.constant(np.array(initial_ids)[None,:], dtype=tf.int32)
+        print(initial_ids)
+        print(len(self.vocab))
+        from tensor2tensor.utils.beam_search import beam_search
+        pred = beam_search(
+            symbols_to_logits_fn=lambda ids: tf.tile(logits, tf.constant([beam_size,1], dtype=tf.float32)),  # A hack to make it work with our architecture
+            initial_ids=initial_ids,  # A hack to make it work with our architecture
+            beam_size=beam_size,
+            decode_length=1,
+            vocab_size=len(self.vocab)+1,
+            eos_id=0,
+            alpha=alpha  # No idea what this does
+        )
+        print(pred)
+        return pred
+
     def sample_top_p(self, logits, top_p=0.9, *args, **kwargs):
         return sample_top_p(logits, top_p=0.9, *args, **kwargs)
 
@@ -73,7 +87,7 @@ class Generator:
             y, _ = self.model.predict(x, verbose=0)
             # sample_token = self.sample_top_k(y[0][sample_index])
 
-            sample_token = sampling_method(y[0][sample_index], *args, **kwargs)
+            sample_token = sampling_method(y[0][sample_index], *args, **kwargs, initial_ids=prompt_tokens)
             tokens_generated.append(sample_token)
             prompt_tokens.append(sample_token)
             num_tokens_generated = len(tokens_generated)
@@ -110,5 +124,4 @@ class GenerationCallback(tf.keras.callbacks.Callback):
     @staticmethod
     def create(start_prompt, seq_len, vocab, gen_len=100):
         return
-
 
