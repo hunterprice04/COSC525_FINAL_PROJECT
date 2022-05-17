@@ -4,7 +4,8 @@ import tensorflow as tf
 
 
 class Tokenizer(tf.keras.layers.TextVectorization):
-    def __init__(self, dataset, max_vocab_size, max_seq_len):
+    def __init__(self, dataset, model_config):
+        max_vocab_size, max_seq_len = model_config.VOCAB_SZ, model_config.MAX_LEN
         super().__init__(standardize=self.preprocess_txt,
                          max_tokens=max_vocab_size - 1,
                          output_mode="int",
