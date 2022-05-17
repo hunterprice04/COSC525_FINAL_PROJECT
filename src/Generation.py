@@ -105,7 +105,7 @@ class GenerationCallback(tf.keras.callbacks.Callback):
             txt = generator.generate(self.prompt_txt, self.max_tokens, sampling_method)
             print(f"\n{name} generated:\n{txt}\n")
             if self.tb_file_writer is not None:
-                self.tb_file_writer.add_text(name, txt, epoch)
+                self.tb_file_writer.text(name, txt, epoch)
 
     @staticmethod
     def create(start_prompt, seq_len, vocab, gen_len=100):
