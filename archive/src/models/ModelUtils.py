@@ -6,11 +6,12 @@ from src.utils.Config import Config
 from src.utils.GPUtils import GPUtils
 import tensorflow as tf
 
+
 class ModelUtils:
 
     @staticmethod
     def create_model_name(config: Config, model_type: str):
-        D, TR = config.DATA, config.TRAINING
+        D, TR = config.MODEL, config.TRAINING
         n_l = config.EMBED.label
         n_d = f"WS-{D.WINDOW_SIZE}_ST-{D.STRIDE}"
         n_hs = [str(hs) for hs in TR.HIDDEN_STATE_SIZE]

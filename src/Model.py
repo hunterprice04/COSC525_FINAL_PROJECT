@@ -35,14 +35,14 @@ class Transformer(tf.keras.layers.Layer):
         return self.norm2(out1 + feed_forward_out)
 
     def get_config(self):
-        config = super().get_config()
-        config.update({
+        c = super().get_config()
+        c.update({
             "embedding_dim": self.embedding_dim,
             "num_att_heads": self.num_att_heads,
             "state_dims": self.state_dims,
             "dropout_rate": self.dropout_rate,
         })
-        return config
+        return c
 
 
 class WarmupScheduler(tf.keras.optimizers.schedules.LearningRateSchedule):
@@ -58,12 +58,12 @@ class WarmupScheduler(tf.keras.optimizers.schedules.LearningRateSchedule):
         return tf.math.rsqrt(self.emb_dim) * tf.math.minimum(arg1, arg2)
 
     def get_config(self):
-        config = super().get_config()
-        config.update({
+        c = super().get_config()
+        c.update({
             "emb_dim": self.emb_dim,
             "warmup_steps": self.warmup_steps,
         })
-        return config
+        return c
 
 
 class TokenAndPositionEmbedding(tf.keras.layers.Layer):
@@ -83,13 +83,13 @@ class TokenAndPositionEmbedding(tf.keras.layers.Layer):
         return x + pos
 
     def get_config(self):
-        config = super().get_config()
-        config.update({
+        c = super().get_config()
+        c.update({
             "max_len": self.max_len,
             "vocab_size": self.vocab_size,
             "embed_dim": self.embed_dim,
         })
-        return config
+        return c
 
 
 def causal_attention_mask(batch_size, n_dest, n_src, dtype):
