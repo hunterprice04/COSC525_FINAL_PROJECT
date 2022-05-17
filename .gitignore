@@ -168,3 +168,5 @@ decoder.pkl
 *.zst.bak
 
 gpt/**/*
+logs
+data/wiki103.train.tokens
