@@ -161,7 +161,7 @@ class GenerationCallback(tf.keras.callbacks.Callback):
             return
         generator = Generator(self.model, self.seq_len, self.vocab)
         for name, f in generator.sampling_funcs.items():
-            txt = generator.generate(self.prompt_txt, self.max_tokens, sampling_method)
+            txt = generator.generate(self.prompt_txt, self.max_tokens, f)
             print(f"\n{name} generated:\n{txt}\n")
             if self.tb_file_writer is not None:
                 self.tb_file_writer.text(name, txt, epoch)
