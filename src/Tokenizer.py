@@ -5,6 +5,7 @@ import tensorflow as tf
 
 class Tokenizer(tf.keras.layers.TextVectorization):
     def __init__(self, dataset, model_config):
+        print("[TOKENIZER]: Initializing...")
         max_vocab_size, max_seq_len = model_config.VOCAB_SZ, model_config.MAX_LEN
         super().__init__(standardize=self.preprocess_txt,
                          max_tokens=max_vocab_size - 1,
@@ -15,5 +16,7 @@ class Tokenizer(tf.keras.layers.TextVectorization):
 
     def preprocess_txt(self, input_string):
         # Preprocessing for word-level model
-        s1 = tf.strings.lower(input_string)
-        return tf.strings.regex_replace(s1, f"([{string.punctuation}])", r" \1")
+        # s1 = tf.strings.lower(input_string)
+        # s2 = tf.strings.regex_replace(s1, "\n", "[EOL]")
+        # s3 = tf.strings.regex_replace(s1, f"([{string.punctuation}])", r" \1")
+        return input_string
