@@ -16,7 +16,7 @@ class Tokenizer(tf.keras.layers.TextVectorization):
 
     def preprocess_txt(self, input_string):
         # Preprocessing for word-level model
-        s1 = tf.strings.lower(input_string)
-        # replace newline with [EOL]
+        # s1 = tf.strings.lower(input_string)
         # s2 = tf.strings.regex_replace(s1, "\n", "[EOL]")
-        return tf.strings.regex_replace(s1, f"([{string.punctuation}])", r" \1")
+        # s3 = tf.strings.regex_replace(s1, f"([{string.punctuation}])", r" \1")
+        return input_string
