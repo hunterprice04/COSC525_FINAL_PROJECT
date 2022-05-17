@@ -4,7 +4,6 @@ import string
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import layers
 
 
 class Transformer(tf.keras.layers.Layer):
@@ -69,7 +68,7 @@ class WarmupScheduler(tf.keras.optimizers.schedules.LearningRateSchedule):
 
 class TokenAndPositionEmbedding(tf.keras.layers.Layer):
     def __init__(self, max_len, vocab_size, embed_dim):
-        super().__init__()
+        super(TokenAndPositionEmbedding, self).__init__()
         self.max_len = max_len
         self.vocab_size = vocab_size
         self.embed_dim = embed_dim

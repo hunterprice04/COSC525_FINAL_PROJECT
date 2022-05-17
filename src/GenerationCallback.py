@@ -4,7 +4,6 @@ import string
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import layers
 
 
 class GenerationCallback(tf.keras.callbacks.Callback):
