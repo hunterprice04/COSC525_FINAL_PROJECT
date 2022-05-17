@@ -47,7 +47,7 @@ class Generator:
             num_tokens_generated = len(tokens_generated)
         print(f"Generated {num_tokens_generated} tokens")
         txt = " ".join(
-            [self.detokenize(_) for _ in prompt_tokens + tokens_generated]
+            [self.detokenize(_) for _ in prompt_tokens]
         )
         return txt
 
