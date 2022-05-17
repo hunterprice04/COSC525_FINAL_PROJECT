@@ -2,7 +2,7 @@ import random
 import tensorflow as tf
 
 
-class Dataset(tf.data.TextLineDataset):
+class Dataset(tf.data.TFRecordDataset):
     def __init__(self, file_pth, shuffle=True):
         print(f"[DATASET]: Loading {file_pth}")
         if shuffle:
