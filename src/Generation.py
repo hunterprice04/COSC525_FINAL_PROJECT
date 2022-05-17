@@ -117,7 +117,7 @@ class Generator:
                 x = np.array([x])
                 y, _ = self.model.predict(x, verbose=0)
 
-                sample_token = sampling_method(logits=y[0][sample_index], *args, **kwargs)
+                sample_token = sampling_method(self, logits=y[0][sample_index], *args, **kwargs)
                 tokens_generated.append(sample_token)
                 prompt_tokens.append(sample_token)
                 num_tokens_generated = len(tokens_generated)
@@ -132,7 +132,7 @@ class Generator:
                 x = prompt_tokens
             x = np.array([x])
             y, _ = self.model.predict(x, verbose=0)
-            tokens_generated = sampling_method(
+            tokens_generated = sampling_method(self,
                 logits=None,
                 initial_ids=prompt_tokens,
                 max_tokens=max_tokens, *args, **kwargs)
