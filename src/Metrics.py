@@ -35,21 +35,36 @@ class Metrics:
         return metric_values
 
 
-def get_metrics_for_all_sampling(sampling, input_ids, tokenizer, references, num_gen=1, seed=None):
-    greedy, beam, random, top_k, top_p = generate_all_sampling(sampling, input_ids, tokenizer, num_gen, seed)
+def get_metrics(predictions, references):
+    metric_values = {'predictions': predictions}
+
+    # tokenize the input texts and get reference texts
+    predictions = list(tokenize(predictions))
+    predict_len = len(predictions)
+    n_references = get_n_random_sentences(references, predict_len)
+
+    # get metrics
+    metric_values.update(bleu.compute(predictions=predictions, references=list(to_bleu_references(n_references))))
+    metric_values.update(rouge.compute(predictions=lword_to_lstr(predictions), references=lword_to_lstr(n_references)))
+    metric_values.update(perplexity.compute(input_texts=lword_to_lstr(predictions), model_id='gpt2'))
+
+    return metric_values
+
+
+def get_metrics_for_all_sampling(generator, prompt, references):
+    greedy, random, top_k, top_p = generate_all_sampling(generator, prompt)
     return {
-        'greedy': Metrics.get_metrics(greedy, references),
-        'beam': Metrics.get_metrics(beam, references),
-        'random': Metrics.get_metrics(random, references),
-        'top_k': Metrics.get_metrics(top_k, references),
-        'top_p': Metrics.get_metrics(top_p, references)
+        'greedy': get_metrics(greedy, references),
+        'random': get_metrics(random, references),
+        'top_k': get_metrics(top_k, references),
+        'top_p': get_metrics(top_p, references)
     }
 
 
-def get_metrics_for_all_prompts(sampling, prompts, tokenizer, references, num_gen, seed):
+def get_metrics_for_all_prompts(generator, prompts, references):
     metrics = {}
-    for i, prompt in tqdm.tqdm(prompts.items()):
-        metrics[i] = get_metrics_for_all_sampling(sampling, prompt, tokenizer, references, num_gen, seed)
+    for i, prompt in tqdm.tqdm(enumerate(prompts)):
+        metrics[i] = get_metrics_for_all_sampling(generator, prompt, references)
     return metrics
 
 

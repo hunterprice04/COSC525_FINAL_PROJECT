@@ -25,7 +25,6 @@ class Generator:
             'top_p': self.TOP_P
         }
 
-
     def greedy(self, logits, *args, **kwargs):
         log_probs = logits - tf.reduce_logsumexp(logits, axis=-1, keepdims=True)
         return tf.argmax(log_probs, axis=-1).numpy()
@@ -60,7 +59,7 @@ class Generator:
 # vocab_size: Size of the vocab, must equal the size of the logits returned by
 # symbols_to_logits_fn
 # alpha: alpha for length penalty.
-#     states: dict (possibly nested) of decoding states.
+# states: dict (possibly nested) of decoding states.
 # eos_id: ID for end of sentence.
 # stop_early: a boolean - stop once best sequence is provably determined.
 # use_tpu: A bool, whether to do beam search on TPU.
@@ -70,19 +69,21 @@ class Generator:
 # Tuple of
 # (decoded beams [batch_size, beam_size, decode_length]
 # decoding probabilities [batch_size, beam_size])
-    def beam_search(self, logits, initial_ids=None, beam_size=3, alpha=0.6, max_tokens=50, *args, **kwargs):
+    def beam_search(self, logits, initial_ids=None, beam_size=2, alpha=0.6, max_tokens=50, *args, **kwargs):
         initial_ids = tf.constant(np.array(initial_ids)[None,:], dtype=tf.int32)
         print(initial_ids)
 
         def symbols_to_logits_fn(ids):
             print(ids)
-            ids = tf.reshape(ids, [beam_size, -1])
+            print(tf.squeeze(ids))
 
+            ids = tf.reshape(ids, [beam_size, -1])
             print(ids)
             logits,_ = self.model.predict(ids)
             print(logits.shape)
-            print(logits[:,0,:].shape)
-            return logits
+            print(logits[0,:].shape)
+            print(logits.flatten().shape)
+            return logits.flatten()
 
         pred = beam_search(
             symbols_to_logits_fn=symbols_to_logits_fn,
