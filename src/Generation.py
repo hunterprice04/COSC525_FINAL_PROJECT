@@ -91,7 +91,7 @@ class Generator:
         return pred
 
     def sample_top_p(self, logits, top_p=0.9, *args, **kwargs):
-        return sample_top_p(logits, top_p=0.9, *args, **kwargs)
+        return sample_top_p(logits, top_p=top_p, *args, **kwargs)
 
 
     def detokenize(self, number):
@@ -132,7 +132,7 @@ class Generator:
                 x = prompt_tokens
             x = np.array([x])
             y, _ = self.model.predict(x, verbose=0)
-            tokens_generated = sampling_method(
+            tokens_generated = sampling_method(self,
                 logits=None,
                 initial_ids=prompt_tokens,
                 max_tokens=max_tokens, *args, **kwargs)
@@ -156,12 +156,12 @@ class GenerationCallback(tf.keras.callbacks.Callback):
     def detokenize(self, number):
         return self.vocab[number]
 
-    def on_epoch_end(self, epoch, logs=None, sampling_method=Generator.sample_top_k):
+    def on_epoch_end(self, epoch, logs=None):
         if (epoch + 1) % self.print_every != 0:
             return
         generator = Generator(self.model, self.seq_len, self.vocab)
         for name, f in generator.sampling_funcs.items():
-            txt = generator.generate(self.prompt_txt, self.max_tokens, f)
+            txt = generator.generate(self.prompt_txt, self.max_tokens, lambda *args, **kwargs: f(generator, *args, **kwargs))
             print(f"\n{name} generated:\n{txt}\n")
             if self.tb_file_writer is not None:
                 self.tb_file_writer.text(name, txt, epoch)
