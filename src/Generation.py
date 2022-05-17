@@ -99,9 +99,11 @@ class Generator:
     def sample_top_p(self, logits, top_p=0.9, *args, **kwargs):
         return sample_top_p(logits, top_p=top_p, *args, **kwargs)
 
-
     def detokenize(self, number):
-        return self.vocab[number]
+        if 0 <= number < len(self.vocab):
+            return self.vocab[number]
+        else:
+            return '<UNK>'
 
     def generate(self, start_prompt, max_tokens, sampling_method, *args, **kwargs):
         prompt_tokens = [self.word_to_index.get(_, 1) for _ in start_prompt.lower().split()]
