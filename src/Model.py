@@ -8,7 +8,7 @@ import tensorflow as tf
 
 class TransformerBlock(tf.keras.layers.Layer):
     def __init__(self, embedding_dim, num_att_heads, state_dims, dropout_rate=0.1):
-        super(TransformerBlock, self).__init__()
+        super(TransformerBlock, self).__init__(name=f"tb_{embedding_dim}_{num_att_heads}_{state_dims}_{dropout_rate}")
         self.embedding_dim = embedding_dim
         self.num_att_heads = num_att_heads
         self.state_dims = state_dims

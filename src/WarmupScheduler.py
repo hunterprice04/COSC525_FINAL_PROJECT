@@ -1,14 +1,10 @@
 import tensorflow as tf
 
-from src.Config import ModelConfig
-from src.Model import TokenAndPositionEmbedding
-from src.Model import TransformerBlock
-
 
 class WarmupScheduler(tf.keras.optimizers.schedules.LearningRateSchedule):
-    def __init__(self, embedding_dim, warmup_steps):
-        super(WarmupScheduler, self).__init__()
-        self.emb_dim = tf.cast(embedding_dim, tf.float32)
+    def __init__(self, emb_dim, warmup_steps):
+        super().__init__()
+        self.emb_dim = tf.cast(emb_dim, tf.float32)
         self.warmup_steps = warmup_steps
 
     def __call__(self, step):
