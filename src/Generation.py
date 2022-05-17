@@ -175,9 +175,6 @@ class GenerationCallback(tf.keras.callbacks.Callback):
         self.print_every = print_every
         self.tb_file_writer = tb_file_writer
 
-    def detokenize(self, number):
-        return self.vocab[number]
-
     def on_epoch_end(self, epoch, logs=None):
         if (epoch + 1) % self.print_every != 0:
             return
@@ -187,7 +184,7 @@ class GenerationCallback(tf.keras.callbacks.Callback):
             print(f"\n{name} generated:\n{txt}\n")
             if self.tb_file_writer is not None:
                 with self.tb_file_writer.as_default():
-                    self.summary.text(name, txt, epoch)
+                    tf.summary.text(name, txt, epoch)
 
     @staticmethod
     def create(start_prompt, seq_len, vocab, gen_len=100):

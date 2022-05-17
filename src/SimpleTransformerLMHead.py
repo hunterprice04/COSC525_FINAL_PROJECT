@@ -55,8 +55,9 @@ class SimpleTransformerLMHead:
 
     def train(self, eval_prompt, eval_prompt_len=100, finetune_files: list = None, override_epochs: int = None):
         self.__check_model_loaded()
-        if finetune_files is None:
-            if not self.__load_dataset_from_paths(self.config.TRAINING.DATASET):
+        if finetune_files is not None:
+            print("# [SimpleTransformerLMHead] Loading files for finetuning...")
+            if not self.__load_dataset_from_paths(finetune_files):
                 raise ValueError("W: [SimpleTransformerLMHead] Error loading finetuning dataset. "
                                  "Please check the finetune_files parameter.")
         print("# [SimpleTransformerLMHead] Training...")

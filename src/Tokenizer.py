@@ -1,6 +1,5 @@
-import string
-
 import tensorflow as tf
+import tensorflow_text as tf_text
 
 
 class Tokenizer(tf.keras.layers.TextVectorization):
@@ -14,8 +13,15 @@ class Tokenizer(tf.keras.layers.TextVectorization):
         self.adapt(dataset)
 
     def preprocess_txt(self, input_string):
-        # Preprocessing for word-level model
-        s1 = tf.strings.lower(input_string)
-        # s2 = tf.strings.regex_replace(s1, "\n", "[EOL]")
-        # s3 = tf.strings.regex_replace(s1, f"([{string.punctuation}])", r" \1")
-        return s1
+        # Split accecented characters.
+        text = tf_text.normalize_utf8(input_string, 'NFKD')
+        text = tf.strings.lower(text)
+        # Keep space, a to z, and select punctuation.
+        text = tf.strings.regex_replace(text, '[^ a-z.?!,¿]', '')
+        # Add spaces around punctuation.
+        text = tf.strings.regex_replace(text, '[.?!,¿]', r' \0 ')
+        # Strip whitespace.
+        text = tf.strings.strip(text)
+
+        text = tf.strings.join(['[START]', text, '[END]'], separator=' ')
+        return text
