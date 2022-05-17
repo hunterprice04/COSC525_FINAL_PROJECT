@@ -91,7 +91,7 @@ class Generator:
         return pred
 
     def sample_top_p(self, logits, top_p=0.9, *args, **kwargs):
-        return sample_top_p(logits, top_p=0.9, *args, **kwargs)
+        return sample_top_p(logits, top_p=top_p, *args, **kwargs)
 
 
     def detokenize(self, number):
@@ -156,7 +156,7 @@ class GenerationCallback(tf.keras.callbacks.Callback):
     def detokenize(self, number):
         return self.vocab[number]
 
-    def on_epoch_end(self, epoch, logs=None, sampling_method=Generator.sample_top_k):
+    def on_epoch_end(self, epoch, logs=None):
         if (epoch + 1) % self.print_every != 0:
             return
         generator = Generator(self.model, self.seq_len, self.vocab)
