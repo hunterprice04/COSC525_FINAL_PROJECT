@@ -8,7 +8,7 @@ from src.WarmupScheduler import WarmupScheduler
 
 class SimpleTransformer(tf.keras.layers.Layer):
     def __init__(self, max_len, dim_emb, dim_ffn, att_heads, vocab_sz):
-        super(SimpleTransformer, self).__init__()
+        super(SimpleTransformer, self).__init__(name=f"st_{max_len}_{dim_emb}_{dim_ffn}_{att_heads}_{vocab_sz}")
         self.max_len = max_len
         self.dim_emb = dim_emb
         self.dim_ffn = dim_ffn
@@ -38,14 +38,14 @@ class SimpleTransformer(tf.keras.layers.Layer):
     @staticmethod
     def create_model(model_config: ModelConfig):
         inputs = tf.keras.layers.Input(shape=(model_config.MAX_LEN,), dtype=tf.int32)
-        simple_gpt = SimpleTransformer(model_config.MAX_LEN, model_config.DIM_EMB, model_config.DIM_FFN,
-                                       model_config.ATT_HEADS, model_config.VOCAB_SZ)
-        logits, attention_mask = simple_gpt(inputs)
-        m = tf.keras.Model(inputs=inputs, outputs=[logits, attention_mask])
+        layer_st = SimpleTransformer(model_config.MAX_LEN, model_config.DIM_EMB, model_config.DIM_FFN,
+                                     model_config.ATT_HEADS, model_config.VOCAB_SZ)
+        logits, attention_mask = layer_st(inputs)
+        model = tf.keras.Model(inputs=inputs, outputs=[logits, attention_mask])
 
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         learning_rate = WarmupScheduler(model_config.DIM_EMB, model_config.WARMUP_STEPS)
         optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
 
-        m.compile("adam", loss=[loss_fn, None])
-        return m
+        model.compile(optimizer, loss=[loss_fn, None])
+        return model
