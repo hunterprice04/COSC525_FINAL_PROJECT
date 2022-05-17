@@ -8,6 +8,7 @@ class ModelConfig:
     ATT_HEADS: int = field(default_factory=int)
     DIM_EMB: int = field(default_factory=int)
     DIM_FFN: int = field(default_factory=int)
+    NUM_LAYERS: int = field(default_factory=int)
     WARMUP_STEPS: int = field(default_factory=int)
 
 

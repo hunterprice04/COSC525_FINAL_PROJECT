@@ -2,20 +2,21 @@ import tensorflow as tf
 
 from src.Config import ModelConfig
 from src.TokenAndPositionEmbedding import TokenAndPositionEmbedding
-from src.TransformerBlock import TransformerBlock
+from src.SimpleTransformerBlock import SimpleTransformerBlock
 from src.WarmupScheduler import WarmupScheduler
 
 
 class SimpleTransformer(tf.keras.layers.Layer):
-    def __init__(self, max_len, dim_emb, dim_ffn, att_heads, vocab_sz, **kwargs):
+    def __init__(self, max_len, dim_emb, dim_ffn, num_layers, att_heads, vocab_sz, **kwargs):
         super().__init__()
         self.max_len = max_len
         self.dim_emb = dim_emb
         self.dim_ffn = dim_ffn
+        self.num_layers = num_layers
         self.att_heads = att_heads
         self.vocab_sz = vocab_sz
         self.layer_embedding = TokenAndPositionEmbedding(max_len, vocab_sz, dim_emb)
-        self.transformer_block = TransformerBlock(dim_emb, att_heads, dim_ffn)
+        self.transformer_block = SimpleTransformerBlock(dim_emb, att_heads, dim_ffn, num_layers)
         self.layer_output = tf.keras.layers.Dense(vocab_sz)
 
     def call(self, inputs):
@@ -30,6 +31,7 @@ class SimpleTransformer(tf.keras.layers.Layer):
             "max_len": self.max_len,
             "dim_emb": self.dim_emb,
             "dim_ffn": self.dim_ffn,
+            "num_layers": self.num_layers,
             "att_heads": self.att_heads,
             "vocab_sz": self.vocab_sz,
         })
@@ -39,7 +41,7 @@ class SimpleTransformer(tf.keras.layers.Layer):
     def create_model(model_config: ModelConfig):
         inputs = tf.keras.layers.Input(shape=(model_config.MAX_LEN,), dtype=tf.int32)
         layer_st = SimpleTransformer(model_config.MAX_LEN, model_config.DIM_EMB, model_config.DIM_FFN,
-                                     model_config.ATT_HEADS, model_config.VOCAB_SZ)
+                                     model_config.NUM_LAYERS, model_config.ATT_HEADS, model_config.VOCAB_SZ)
         logits, attention_mask = layer_st(inputs)
         model = tf.keras.Model(inputs=inputs, outputs=[logits, attention_mask])
 

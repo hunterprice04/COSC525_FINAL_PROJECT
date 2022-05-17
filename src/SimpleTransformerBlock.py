@@ -1,18 +1,18 @@
 import tensorflow as tf
 
 
-class TransformerBlock(tf.keras.layers.Layer):
-    def __init__(self, dim_emb, att_heads, dim_ffn, dropout_rate=0.1, **kwargs):
+class SimpleTransformerBlock(tf.keras.layers.Layer):
+    def __init__(self, dim_emb, att_heads, dim_ffn, num_layers, dropout_rate=0.1, **kwargs):
         super().__init__()
         self.dim_emb = dim_emb
         self.att_heads = att_heads
         self.dim_ffn = dim_ffn
+        self.num_layers = num_layers
         self.dropout_rate = dropout_rate
         self.attention = tf.keras.layers.MultiHeadAttention(att_heads, dim_emb)
-        self.feed_forward = tf.keras.Sequential([
-            tf.keras.layers.Dense(dim_ffn, activation="relu"),
-            tf.keras.layers.Dense(dim_emb)
-        ])
+        self.layers = [tf.keras.layers.Dense(dim_ffn, activation="relu") for _ in range(num_layers)]
+        self.layers.append(tf.keras.layers.Dense(dim_emb))
+        self.feed_forward = tf.keras.Sequential(self.layers)
         self.norm1 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
         self.norm2 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
         self.drop1 = tf.keras.layers.Dropout(dropout_rate)
