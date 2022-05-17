@@ -151,7 +151,7 @@ class Generator:
                 x = prompt_tokens
             x = np.array([x])
             y, _ = self.model.predict(x, verbose=0)
-            tokens_generated = self.beam_search(self,
+            tokens_generated = self.beam_search(
                 logits=None,
                 initial_ids=prompt_tokens,
                 max_tokens=max_tokens, *args, **kwargs)
