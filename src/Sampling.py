@@ -107,24 +107,24 @@ class Sampling:
         """
         return self.model.generate(input_ids, kwargs)
 
-    def print(self, input_ids, sample_type: Union[str | int], tokenizer, quiet=False, **kwargs):
-        if isinstance(sample_type, str):
-            sample_func = self.sample_dict[sample_type]
-        elif isinstance(sample_type, int):
-            sample_func = self.sample_list[sample_type]
-        else:
-            print('USAGE: bad sample_type')
-            sys.exit()
-
-        generated = sample_func(input_ids, **kwargs)
-        generated = list(map(lambda x: tokenizer.decode(x, skip_special_tokens=True), generated))
-
-        if not quiet:
-            for i, output in enumerate(generated):
-                print('-' * 100)
-                print("{}: {}".format(i, output))
-
-        return generated
+    # def print(self, input_ids, sample_type: Union[str | int], tokenizer, quiet=False, **kwargs):
+    #     if isinstance(sample_type, str):
+    #         sample_func = self.sample_dict[sample_type]
+    #     elif isinstance(sample_type, int):
+    #         sample_func = self.sample_list[sample_type]
+    #     else:
+    #         print('USAGE: bad sample_type')
+    #         sys.exit()
+    #
+    #     generated = sample_func(input_ids, **kwargs)
+    #     generated = list(map(lambda x: tokenizer.decode(x, skip_special_tokens=True), generated))
+    #
+    #     if not quiet:
+    #         for i, output in enumerate(generated):
+    #             print('-' * 100)
+    #             print("{}: {}".format(i, output))
+    #
+    #     return generated
 
 
 def generate_all_sampling(sampling, input_ids, tokenizer, num_gen=1, seed=None):
