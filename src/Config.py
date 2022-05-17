@@ -3,17 +3,17 @@ from dataclasses import dataclass, field
 
 @dataclass
 class ModelConfig:
-    VOCAB_SZ: int = field(default=20000)
-    MAX_LEN: int = field(default=100)
-    ATT_HEADS: int = field(default=2)
-    DIM_EMB: int = field(default=128)
-    DIM_FFN: int = field(default=512)
-    WARMUP_STEPS: int = field(default=2000)
+    VOCAB_SZ: int = field(default_factory=int)
+    MAX_LEN: int = field(default_factory=int)
+    ATT_HEADS: int = field(default_factory=int)
+    DIM_EMB: int = field(default_factory=int)
+    DIM_FFN: int = field(default_factory=int)
+    WARMUP_STEPS: int = field(default_factory=int)
 
 
 @dataclass
 class TrainingConfig:
-    BATCH_SIZE: int = field(default=256)
+    BATCH_SIZE: int = field(default=32)
     EPOCHS: int = field(default=20)
     DATASET: list = field(default_factory=list)
 

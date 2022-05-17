@@ -4,6 +4,8 @@ import string
 
 import numpy as np
 import tensorflow as tf
+
+from .Tokenizer import Tokenizer
 from .top_p import sample_top_p
 from tensor2tensor.utils.beam_search import beam_search
 
@@ -108,7 +110,9 @@ class Generator:
             return '<UNK>'
 
     def generate(self, start_prompt, max_tokens, sampling_method, *args, **kwargs):
-        prompt_tokens = [self.word_to_index.get(_, 1) for _ in start_prompt.lower().split()]
+        start_prompt = Tokenizer.preprocess_sequence(start_prompt, end=False).numpy().decode('utf-8')
+        print(start_prompt)
+        prompt_tokens = [self.word_to_index.get(_, 1) for _ in start_prompt.split()]
         prompt_tokens = [_ for _ in prompt_tokens]
 
         if isinstance(sampling_method, str):
@@ -159,7 +163,7 @@ class Generator:
                 logits=None,
                 initial_ids=prompt_tokens,
                 max_tokens=max_tokens, *args, **kwargs)
-            print(f"Generated {len(tokens_generated)} tokens")
+            # print(f"Generated {len(tokens_generated)} tokens")
         txt = " ".join(
             [self.detokenize(_) for _ in prompt_tokens]
         )
@@ -181,7 +185,7 @@ class GenerationCallback(tf.keras.callbacks.Callback):
         generator = Generator(self.model, self.seq_len, self.vocab)
         for name in generator.sampling_funcs.keys():
             txt = generator.generate(self.prompt_txt, self.max_tokens, name)
-            print(f"\n{name} generated:\n{txt}\n")
+            print(f"\n# {name.upper()} GENERATED:\n{txt}\n")
             if self.tb_file_writer is not None:
                 with self.tb_file_writer.as_default():
                     tf.summary.text(name, txt, epoch)

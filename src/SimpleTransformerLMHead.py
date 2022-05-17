@@ -2,6 +2,7 @@ import os
 import pickle
 
 from src import Utils
+from src.CustomSchedule import CustomSchedule
 from src.Dataset import Dataset
 from src.Generation import GenerationCallback, Generator
 from src.SimpleTransformer import SimpleTransformer
@@ -42,8 +43,17 @@ class SimpleTransformerLMHead:
 
         print(f"# [SimpleTransformerLMHead] Loading model from {model_dir}...")
         # Load model, config, and vocab
-        self.transformer_model = load_model(model_dir)
-        config_path = os.path.join(model_dir, "config_model.pkl")
+        # self.transformer_model = load_model(model_dir)
+        keras_config_pasth = os.path.join(model_dir, "config_keras.pkl")
+        with open(keras_config_pasth, 'rb') as fck:
+            config_keras = pickle.load(fck)
+        custom_objects = {"CustomSchedule": CustomSchedule,
+                          "SimpleTransformer": SimpleTransformer}
+
+        with tf.keras.utils.custom_object_scope(custom_objects):
+            self.transformer_model = tf.keras.Model.from_config(config_keras)
+
+        config_path = os.path.join(model_dir, "config_st.pkl")
         with open(config_path, 'rb') as fc:
             self.config = pickle.load(fc)
         vocab_path = os.path.join(model_dir, 'vocab.pkl')
@@ -75,17 +85,20 @@ class SimpleTransformerLMHead:
         self.__check_model_loaded()
         print(f"# [SimpleTransformerLMHead] Saving model to {dir_path}...")
         self.transformer_model.save(dir_path)
+        config_keras = self.transformer_model.get_config()
         with open(os.path.join(dir_path, "vocab.pkl"), "wb") as f:
             pickle.dump(self.vocab, f)
-        with open(os.path.join(dir_path, "config.pkl"), "wb") as f:
+        with open(os.path.join(dir_path, "config_st.pkl"), "wb") as f:
             pickle.dump(self.config, f)
+        with open(os.path.join(dir_path, "config_keras.pkl"), "wb") as f:
+            pickle.dump(config_keras, f)
 
-    def generate(self, prompt, max_tokens=25):
+    def generate(self, prompt, max_tokens=25, sampling_method="top_k", *args, **kwargs):
         if self.generator is None:
             raise ValueError("# [SimpleTransformerLMHead - generate] No model loaded or created. "
                              "Call new() or load() first.")
         print("# [SimpleTransformerLMHead] Generating...")
-        return self.generator.generate(prompt, max_tokens)
+        return self.generator.generate(prompt, max_tokens, sampling_method, *args, **kwargs)
 
     def __create_generator(self):
         self.__check_model_loaded()

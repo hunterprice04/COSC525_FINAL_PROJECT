@@ -1,14 +1,14 @@
 import tensorflow as tf
 
 from src.Config import ModelConfig
-from src.Model import TokenAndPositionEmbedding
-from src.Model import TransformerBlock
-from src.WarmupScheduler import WarmupScheduler
+from src.TransformerBlock import TokenAndPositionEmbedding
+from src.TransformerBlock import TransformerBlock
+from src.CustomSchedule import CustomSchedule
 
 
 class SimpleTransformer(tf.keras.layers.Layer):
-    def __init__(self, max_len, dim_emb, dim_ffn, att_heads, vocab_sz):
-        super(SimpleTransformer, self).__init__(name=f"st_{max_len}_{dim_emb}_{dim_ffn}_{att_heads}_{vocab_sz}")
+    def __init__(self, max_len, dim_emb, dim_ffn, att_heads, vocab_sz, **kwargs):
+        super().__init__()
         self.max_len = max_len
         self.dim_emb = dim_emb
         self.dim_ffn = dim_ffn
@@ -44,7 +44,7 @@ class SimpleTransformer(tf.keras.layers.Layer):
         model = tf.keras.Model(inputs=inputs, outputs=[logits, attention_mask])
 
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        learning_rate = WarmupScheduler(model_config.DIM_EMB, model_config.WARMUP_STEPS)
+        learning_rate = CustomSchedule(model_config.DIM_EMB, model_config.WARMUP_STEPS)
         optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
 
         model.compile(optimizer, loss=[loss_fn, None])
