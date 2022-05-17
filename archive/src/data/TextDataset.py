@@ -12,17 +12,17 @@ class TextDataset(Logger.Wrapper):
         super().__init__(verbosity=verbosity)
         self.print_1(f"# [TextDataset]:\t{config}")
         self.config = config
-        self.file_path: str = config.DATA.DATA_PATH
+        self.file_path: str = config.MODEL.DATA_PATH
         self.label: str = os.path.basename(self.file_path).split(".")[0]
-        self.window_size: int = config.DATA.WINDOW_SIZE
-        self.stride: int = config.DATA.STRIDE
+        self.window_size: int = config.MODEL.WINDOW_SIZE
+        self.stride: int = config.MODEL.STRIDE
         self.dataset_ids = None
         self.dataset_oh = None
 
     def __str__(self):
         result = f"# Dateset Summary [label=`{self.label}`]:\n"
         result += "=> Configuration:\n"
-        result += f"\t{self.config.DATA}\n"
+        result += f"\t{self.config.MODEL}\n"
         show_max = 10
         result += f"=> {show_max} Samples:\n"
         for i, (x, y) in enumerate(self.dataset_ids.take(show_max)):
