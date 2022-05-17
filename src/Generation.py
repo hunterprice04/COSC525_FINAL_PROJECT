@@ -163,13 +163,12 @@ class Generator:
 
 
 class GenerationCallback(tf.keras.callbacks.Callback):
-    def __init__(self, prompt_txt, max_tokens, seq_len, vocab, top_k=10, print_every=1, tb_file_writer=None):
+    def __init__(self, prompt_txt, max_tokens, seq_len, vocab, print_every=1, tb_file_writer=None, *args, **kwargs):
         self.max_tokens = max_tokens
         self.seq_len = seq_len
         self.prompt_txt = prompt_txt
         self.vocab = vocab
         self.print_every = print_every
-        self.k = top_k
         self.tb_file_writer = tb_file_writer
 
     def detokenize(self, number):
