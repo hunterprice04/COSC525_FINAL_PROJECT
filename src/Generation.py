@@ -5,6 +5,7 @@ import string
 import numpy as np
 import tensorflow as tf
 from .top_p import sample_top_p
+from tensor2tensor.utils.beam_search import beam_search
 
 class Generator:
     def __init__(self, model, seq_len, vocab):
@@ -42,18 +43,47 @@ class Generator:
         preds = np.asarray(preds).astype("float32")
         return np.random.choice(indices, p=preds)
 
-    def beam_search(self, logits, initial_ids=None, beam_size=2, alpha=0.6, *args, **kwargs):
-        logits = tf.constant(logits[None,:], dtype=tf.float32)
+#
+# symbols_to_logits_fn: Interface to the model, to provide logits.
+# Shoud take [batch_size, decoded_ids] and return [batch_size, vocab_size]
+# initial_ids: Ids to start off the decoding, this will be the first thing
+# handed to symbols_to_logits_fn (after expanding to beam size)
+# [batch_size]
+# beam_size: Size of the beam.
+# decode_length: Number of steps to decode for.
+# vocab_size: Size of the vocab, must equal the size of the logits returned by
+# symbols_to_logits_fn
+# alpha: alpha for length penalty.
+#     states: dict (possibly nested) of decoding states.
+# eos_id: ID for end of sentence.
+# stop_early: a boolean - stop once best sequence is provably determined.
+# use_tpu: A bool, whether to do beam search on TPU.
+# use_top_k_with_unique: bool, whether to use a fast (but decreased precision)
+# top_k during TPU beam search.
+# Returns:
+# Tuple of
+# (decoded beams [batch_size, beam_size, decode_length]
+# decoding probabilities [batch_size, beam_size])
+    def beam_search(self, logits, initial_ids=None, beam_size=3, alpha=0.6, max_tokens=50, *args, **kwargs):
         initial_ids = tf.constant(np.array(initial_ids)[None,:], dtype=tf.int32)
         print(initial_ids)
-        print(len(self.vocab))
-        from tensor2tensor.utils.beam_search import beam_search
+
+        def symbols_to_logits_fn(ids):
+            print(ids)
+            ids = tf.reshape(ids, [beam_size, -1])
+
+            print(ids)
+            logits,_ = self.model.predict(ids)
+            print(logits.shape)
+            print(logits[:,0,:].shape)
+            return logits
+
         pred = beam_search(
-            symbols_to_logits_fn=lambda ids: tf.tile(logits, tf.constant([beam_size,1], dtype=tf.float32)),  # A hack to make it work with our architecture
-            initial_ids=initial_ids,  # A hack to make it work with our architecture
+            symbols_to_logits_fn=symbols_to_logits_fn,
+            initial_ids=initial_ids,
             beam_size=beam_size,
-            decode_length=1,
-            vocab_size=len(self.vocab)+1,
+            decode_length=max_tokens,
+            vocab_size=20000,
             eos_id=0,
             alpha=alpha  # No idea what this does
         )
@@ -70,28 +100,43 @@ class Generator:
     def generate(self, start_prompt, max_tokens, sampling_method, *args, **kwargs):
         prompt_tokens = [self.word_to_index.get(_, 1) for _ in start_prompt.lower().split()]
         prompt_tokens = [_ for _ in prompt_tokens]
+        if not sampling_method == self.beam_search:
 
-        num_tokens_generated = 0
-        tokens_generated = []
-        while num_tokens_generated <= max_tokens:
+            num_tokens_generated = 0
+            tokens_generated = []
+            while num_tokens_generated <= max_tokens:
+                pad_len = self.seq_len - len(prompt_tokens)
+                sample_index = len(prompt_tokens) - 1
+                if pad_len < 0:
+                    x = prompt_tokens[:self.seq_len]
+                    sample_index = self.seq_len - 1
+                elif pad_len > 0:
+                    x = prompt_tokens + [0] * pad_len
+                else:
+                    x = prompt_tokens
+                x = np.array([x])
+                y, _ = self.model.predict(x, verbose=0)
+
+                sample_token = sampling_method(logits=y[0][sample_index], *args, **kwargs)
+                tokens_generated.append(sample_token)
+                prompt_tokens.append(sample_token)
+                num_tokens_generated = len(tokens_generated)
+            print(f"Generated {num_tokens_generated} tokens")
+        else:
             pad_len = self.seq_len - len(prompt_tokens)
-            sample_index = len(prompt_tokens) - 1
             if pad_len < 0:
                 x = prompt_tokens[:self.seq_len]
-                sample_index = self.seq_len - 1
             elif pad_len > 0:
                 x = prompt_tokens + [0] * pad_len
             else:
                 x = prompt_tokens
             x = np.array([x])
             y, _ = self.model.predict(x, verbose=0)
-            # sample_token = self.sample_top_k(y[0][sample_index])
-
-            sample_token = sampling_method(y[0][sample_index], *args, **kwargs, initial_ids=prompt_tokens)
-            tokens_generated.append(sample_token)
-            prompt_tokens.append(sample_token)
-            num_tokens_generated = len(tokens_generated)
-        print(f"Generated {num_tokens_generated} tokens")
+            tokens_generated = sampling_method(
+                logits=None,
+                initial_ids=prompt_tokens,
+                max_tokens=max_tokens, *args, **kwargs)
+            print(f"Generated {len(tokens_generated)} tokens")
         txt = " ".join(
             [self.detokenize(_) for _ in prompt_tokens]
         )
@@ -124,4 +169,3 @@ class GenerationCallback(tf.keras.callbacks.Callback):
     @staticmethod
     def create(start_prompt, seq_len, vocab, gen_len=100):
         return
-
