@@ -27,7 +27,8 @@ class SimpleTransformerLMHead:
         self.config = new_config
         # Load dataset
         if not self.__load_dataset_from_paths(self.config.TRAINING.DATASET):
-            raise ValueError("W: [SimpleTransformerLMHead] Error loading dataset. Please check your config.")
+            raise ValueError("W: [SimpleTransformerLMHead] Error loading dataset. "
+                             "Please inspect the stacktrace or your config.")
         # Create new model
         self.transformer_model = SimpleTransformer.create_model(self.config.MODEL)
         self.transformer_model.summary()
@@ -64,7 +65,8 @@ class SimpleTransformerLMHead:
         if override_epochs is not None:
             epochs = override_epochs
         callbacks, tb_file_writer = Utils.create_callbacks("logs", self.transformer_model)
-        gen_callback = GenerationCallback(eval_prompt, max_tokens=eval_prompt_len, seq_len=seq_len, vocab=vocab)
+        gen_callback = GenerationCallback(eval_prompt, max_tokens=eval_prompt_len, seq_len=seq_len,
+                                          vocab=vocab, tb_file_writer=tb_file_writer)
         callbacks.append(gen_callback)
         self.transformer_model.fit(self.dataset_seq, verbose=1, epochs=epochs, callbacks=callbacks)
 

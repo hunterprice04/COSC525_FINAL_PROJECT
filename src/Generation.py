@@ -7,6 +7,7 @@ import tensorflow as tf
 from .top_p import sample_top_p
 from tensor2tensor.utils.beam_search import beam_search
 
+
 class Generator:
     def __init__(self, model, seq_len, vocab):
         self.model = model
@@ -29,7 +30,7 @@ class Generator:
         log_probs = logits - tf.reduce_logsumexp(logits, axis=-1, keepdims=True)
         return tf.argmax(log_probs, axis=-1).numpy()
 
-    def sample_random(self, logits, temp=0.5, *args, **kwargs):
+    def sample_random(self, logits, temp=0.75, *args, **kwargs):
         if tf.rank(logits) > 2:
             logits = tf.squeeze(tf.squeeze(logits, axis=0), 0)
 
@@ -48,29 +49,29 @@ class Generator:
         preds = np.asarray(preds).astype("float32")
         return np.random.choice(indices, p=preds)
 
-#
-# symbols_to_logits_fn: Interface to the model, to provide logits.
-# Shoud take [batch_size, decoded_ids] and return [batch_size, vocab_size]
-# initial_ids: Ids to start off the decoding, this will be the first thing
-# handed to symbols_to_logits_fn (after expanding to beam size)
-# [batch_size]
-# beam_size: Size of the beam.
-# decode_length: Number of steps to decode for.
-# vocab_size: Size of the vocab, must equal the size of the logits returned by
-# symbols_to_logits_fn
-# alpha: alpha for length penalty.
-# states: dict (possibly nested) of decoding states.
-# eos_id: ID for end of sentence.
-# stop_early: a boolean - stop once best sequence is provably determined.
-# use_tpu: A bool, whether to do beam search on TPU.
-# use_top_k_with_unique: bool, whether to use a fast (but decreased precision)
-# top_k during TPU beam search.
-# Returns:
-# Tuple of
-# (decoded beams [batch_size, beam_size, decode_length]
-# decoding probabilities [batch_size, beam_size])
+    #
+    # symbols_to_logits_fn: Interface to the model, to provide logits.
+    # Shoud take [batch_size, decoded_ids] and return [batch_size, vocab_size]
+    # initial_ids: Ids to start off the decoding, this will be the first thing
+    # handed to symbols_to_logits_fn (after expanding to beam size)
+    # [batch_size]
+    # beam_size: Size of the beam.
+    # decode_length: Number of steps to decode for.
+    # vocab_size: Size of the vocab, must equal the size of the logits returned by
+    # symbols_to_logits_fn
+    # alpha: alpha for length penalty.
+    # states: dict (possibly nested) of decoding states.
+    # eos_id: ID for end of sentence.
+    # stop_early: a boolean - stop once best sequence is provably determined.
+    # use_tpu: A bool, whether to do beam search on TPU.
+    # use_top_k_with_unique: bool, whether to use a fast (but decreased precision)
+    # top_k during TPU beam search.
+    # Returns:
+    # Tuple of
+    # (decoded beams [batch_size, beam_size, decode_length]
+    # decoding probabilities [batch_size, beam_size])
     def beam_search(self, logits, initial_ids=None, beam_size=2, alpha=0.6, max_tokens=50, *args, **kwargs):
-        initial_ids = tf.constant(np.array(initial_ids)[None,:], dtype=tf.int32)
+        initial_ids = tf.constant(np.array(initial_ids)[None, :], dtype=tf.int32)
         print(initial_ids)
 
         def symbols_to_logits_fn(ids):
@@ -79,9 +80,9 @@ class Generator:
 
             ids = tf.reshape(ids, [beam_size, -1])
             print(ids)
-            logits,_ = self.model.predict(ids)
+            logits, _ = self.model.predict(ids)
             print(logits.shape)
-            print(logits[0,:].shape)
+            print(logits[0, :].shape)
             print(logits.flatten().shape)
             return logits.flatten()
 
@@ -97,7 +98,7 @@ class Generator:
         print(pred)
         return pred
 
-    def sample_top_p(self, logits, top_p=0.9, *args, **kwargs):
+    def sample_top_p(self, logits, top_p=0.75, *args, **kwargs):
         return sample_top_p(logits, top_p=top_p, *args, **kwargs)
 
     def detokenize(self, number):
@@ -185,7 +186,8 @@ class GenerationCallback(tf.keras.callbacks.Callback):
             txt = generator.generate(self.prompt_txt, self.max_tokens, name)
             print(f"\n{name} generated:\n{txt}\n")
             if self.tb_file_writer is not None:
-                self.tb_file_writer.text(name, txt, epoch)
+                with self.tb_file_writer.as_default():
+                    self.summary.text(name, txt, epoch)
 
     @staticmethod
     def create(start_prompt, seq_len, vocab, gen_len=100):
