@@ -13,12 +13,18 @@ class Generator:
         self.seq_len = seq_len
         self.vocab = vocab
         self.word_to_index = {word: index for index, word in enumerate(vocab)}
+        self.GREEDY = 0
+        self.RANDOM = 1
+        self.TOP_K = 2
+        self.TOP_P = 3
+        self.BEAM = 4
         self.sampling_funcs = {
-            'greedy': self.greedy,
-            'random': self.sample_random,
-            'top_k': self.sample_top_k,
-            'top_p': self.sample_top_p
+            'greedy': self.GREEDY,
+            'random': self.RANDOM,
+            'top_k': self.TOP_K,
+            'top_p': self.TOP_P
         }
+
 
     def greedy(self, logits, *args, **kwargs):
         log_probs = logits - tf.reduce_logsumexp(logits, axis=-1, keepdims=True)
@@ -100,7 +106,11 @@ class Generator:
     def generate(self, start_prompt, max_tokens, sampling_method, *args, **kwargs):
         prompt_tokens = [self.word_to_index.get(_, 1) for _ in start_prompt.lower().split()]
         prompt_tokens = [_ for _ in prompt_tokens]
-        if not sampling_method == self.beam_search:
+
+        if isinstance(sampling_method, str):
+            sampling_method = self.sampling_funcs[sampling_method]
+
+        if not sampling_method == self.BEAM:
 
             num_tokens_generated = 0
             tokens_generated = []
@@ -117,7 +127,16 @@ class Generator:
                 x = np.array([x])
                 y, _ = self.model.predict(x, verbose=0)
 
-                sample_token = sampling_method(logits=y[0][sample_index], *args, **kwargs)
+                if sampling_method == self.TOP_P:
+                    sample_token = self.sample_top_p(logits=y[0][sample_index], *args, **kwargs)
+                elif sampling_method == self.GREEDY:
+                    sample_token = self.greedy(logits=y[0][sample_index], *args, **kwargs)
+                elif sampling_method == self.RANDOM:
+                    sample_token = self.sample_random(logits=y[0][sample_index], *args, **kwargs)
+                elif sampling_method == self.TOP_K:
+                    sample_token = self.sample_top_p(logits=y[0][sample_index], *args, **kwargs)
+                else:
+                    raise ValueError('Unknown sampling method')
                 tokens_generated.append(sample_token)
                 prompt_tokens.append(sample_token)
                 num_tokens_generated = len(tokens_generated)
@@ -132,7 +151,7 @@ class Generator:
                 x = prompt_tokens
             x = np.array([x])
             y, _ = self.model.predict(x, verbose=0)
-            tokens_generated = sampling_method(self,
+            tokens_generated = self.beam_search(
                 logits=None,
                 initial_ids=prompt_tokens,
                 max_tokens=max_tokens, *args, **kwargs)
@@ -144,13 +163,12 @@ class Generator:
 
 
 class GenerationCallback(tf.keras.callbacks.Callback):
-    def __init__(self, prompt_txt, max_tokens, seq_len, vocab, top_k=10, print_every=1, tb_file_writer=None):
+    def __init__(self, prompt_txt, max_tokens, seq_len, vocab, print_every=1, tb_file_writer=None, *args, **kwargs):
         self.max_tokens = max_tokens
         self.seq_len = seq_len
         self.prompt_txt = prompt_txt
         self.vocab = vocab
         self.print_every = print_every
-        self.k = top_k
         self.tb_file_writer = tb_file_writer
 
     def detokenize(self, number):
@@ -160,8 +178,8 @@ class GenerationCallback(tf.keras.callbacks.Callback):
         if (epoch + 1) % self.print_every != 0:
             return
         generator = Generator(self.model, self.seq_len, self.vocab)
-        for name, f in generator.sampling_funcs.items():
-            txt = generator.generate(self.prompt_txt, self.max_tokens, lambda *args, **kwargs: f(generator, *args, **kwargs))
+        for name in generator.sampling_funcs.keys():
+            txt = generator.generate(self.prompt_txt, self.max_tokens, name)
             print(f"\n{name} generated:\n{txt}\n")
             if self.tb_file_writer is not None:
                 self.tb_file_writer.text(name, txt, epoch)
