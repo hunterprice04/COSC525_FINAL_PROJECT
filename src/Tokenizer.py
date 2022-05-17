@@ -17,10 +17,6 @@ class Tokenizer(tf.keras.layers.TextVectorization):
         # Split accecented characters.
         text = tf_text.normalize_utf8(input_string, 'NFKD')
         text = tf.strings.lower(text)
-        # Keep space, a to z, and select punctuation.
-        text = tf.strings.regex_replace(text, '[^ a-z.?!,¿]', '')
-        # Add spaces around punctuation.
-        text = tf.strings.regex_replace(text, '[.?!,¿]', r' \0 ')
         # Strip whitespace.
         text = tf.strings.strip(text)
         return Tokenizer.add_start_end_token(text, start, end)

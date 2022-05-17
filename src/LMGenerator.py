@@ -107,7 +107,6 @@ class LMGenerator:
 
     def generate(self, start_prompt, max_tokens, sampling_method, *args, **kwargs):
         start_prompt = Tokenizer.preprocess_sequence(start_prompt, end=False).numpy().decode('utf-8')
-        print(start_prompt)
         prompt_tokens = [self.word_to_index.get(_, 1) for _ in start_prompt.split()]
         prompt_tokens = [_ for _ in prompt_tokens]
 

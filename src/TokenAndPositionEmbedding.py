@@ -7,6 +7,7 @@ class TokenAndPositionEmbedding(tf.keras.layers.Layer):
         self.max_len = max_len
         self.vocab_size = vocab_size
         self.embed_dim = embed_dim
+        # TODO: Figure out if to use maxk_zeros
         self.token_emb = tf.keras.layers.Embedding(input_dim=vocab_size, output_dim=embed_dim)
         self.pos_emb = tf.keras.layers.Embedding(input_dim=max_len, output_dim=embed_dim)
 
