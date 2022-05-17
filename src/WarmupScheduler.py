@@ -2,7 +2,7 @@ import tensorflow as tf
 from keras.optimizers.schedules.learning_rate_schedule import LearningRateSchedule
 
 
-class CustomSchedule(LearningRateSchedule):
+class WarmupScheduler(LearningRateSchedule):
     def __init__(self, emb_dim, warmup_steps=4000, **kwargs):
         super().__init__()
         self.emb_dim = emb_dim

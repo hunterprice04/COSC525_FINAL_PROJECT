@@ -1,7 +1,4 @@
-import sys
 import tensorflow as tf
-from typing import Union
-from .tokenize_utils import gen_n_sent
 
 
 class SamplingEnums:

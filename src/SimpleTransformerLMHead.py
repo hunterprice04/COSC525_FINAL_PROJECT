@@ -1,14 +1,14 @@
 import os
 import pickle
 
+import tensorflow as tf
+
 from src import Utils
-from src.CustomSchedule import CustomSchedule
 from src.Dataset import Dataset
-from src.Generation import GenerationCallback, Generator
+from src.LMGenerator import LMGenerationCallback, LMGenerator
 from src.SimpleTransformer import SimpleTransformer
 from src.Tokenizer import Tokenizer
-import tensorflow as tf
-from tensorflow.python.keras.saving.save import load_model
+from src.WarmupScheduler import WarmupScheduler
 
 
 class SimpleTransformerLMHead:
@@ -47,7 +47,7 @@ class SimpleTransformerLMHead:
         keras_config_pasth = os.path.join(model_dir, "config_keras.pkl")
         with open(keras_config_pasth, 'rb') as fck:
             config_keras = pickle.load(fck)
-        custom_objects = {"CustomSchedule": CustomSchedule,
+        custom_objects = {"CustomSchedule": WarmupScheduler,
                           "SimpleTransformer": SimpleTransformer}
 
         with tf.keras.utils.custom_object_scope(custom_objects):
@@ -76,8 +76,8 @@ class SimpleTransformerLMHead:
         if override_epochs is not None:
             epochs = override_epochs
         callbacks, tb_file_writer = Utils.create_callbacks("logs", self.transformer_model)
-        gen_callback = GenerationCallback(eval_prompt, max_tokens=eval_prompt_len, seq_len=seq_len,
-                                          vocab=vocab, tb_file_writer=tb_file_writer)
+        gen_callback = LMGenerationCallback(eval_prompt, max_tokens=eval_prompt_len, seq_len=seq_len,
+                                            vocab=vocab, tb_file_writer=tb_file_writer)
         callbacks.append(gen_callback)
         self.transformer_model.fit(self.dataset_seq, verbose=1, epochs=epochs, callbacks=callbacks)
 
@@ -102,7 +102,7 @@ class SimpleTransformerLMHead:
 
     def __create_generator(self):
         self.__check_model_loaded()
-        self.generator = Generator(self.transformer_model, self.config.MODEL.MAX_LEN, self.vocab)
+        self.generator = LMGenerator(self.transformer_model, self.config.MODEL.MAX_LEN, self.vocab)
 
     def __load_dataset_from_paths(self, dataset_paths: list):
         try:

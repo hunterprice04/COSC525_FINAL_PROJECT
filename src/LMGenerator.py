@@ -1,16 +1,12 @@
-import os
-import random
-import string
-
 import numpy as np
 import tensorflow as tf
+from tensor2tensor.utils.beam_search import beam_search
 
 from .Tokenizer import Tokenizer
 from .top_p import sample_top_p
-from tensor2tensor.utils.beam_search import beam_search
 
 
-class Generator:
+class LMGenerator:
     def __init__(self, model, seq_len, vocab):
         self.model = model
         self.seq_len = seq_len
@@ -170,7 +166,7 @@ class Generator:
         return txt
 
 
-class GenerationCallback(tf.keras.callbacks.Callback):
+class LMGenerationCallback(tf.keras.callbacks.Callback):
     def __init__(self, prompt_txt, max_tokens, seq_len, vocab, print_every=1, tb_file_writer=None, *args, **kwargs):
         self.max_tokens = max_tokens
         self.seq_len = seq_len
@@ -182,7 +178,7 @@ class GenerationCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         if (epoch + 1) % self.print_every != 0:
             return
-        generator = Generator(self.model, self.seq_len, self.vocab)
+        generator = LMGenerator(self.model, self.seq_len, self.vocab)
         for name in generator.sampling_funcs.keys():
             txt = generator.generate(self.prompt_txt, self.max_tokens, name)
             print(f"\n# {name.upper()} GENERATED:\n{txt}\n")

@@ -1,8 +1,10 @@
-import tqdm
 import pandas as pd
+import tqdm
 from datasets import load_metric
-from .tokenize_utils import tokenize, get_n_random_sentences, lword_to_lstr, to_bleu_references
+
 from .Sampling import generate_all_sampling
+from .tokenize_utils import tokenize, get_n_random_sentences, lword_to_lstr, to_bleu_references
+
 # AVAILABLE METRICS
 # https://huggingface.co/metrics
 
