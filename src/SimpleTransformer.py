@@ -2,8 +2,8 @@ import tensorflow as tf
 
 from src.Config import ModelConfig
 from src.Model import TokenAndPositionEmbedding
-from src.Model import Transformer
-from src.Model import WarmupScheduler
+from src.Model import TransformerBlock
+from src.WarmupScheduler import WarmupScheduler
 
 
 class SimpleTransformer(tf.keras.layers.Layer):
@@ -15,7 +15,7 @@ class SimpleTransformer(tf.keras.layers.Layer):
         self.att_heads = att_heads
         self.vocab_sz = vocab_sz
         self.layer_embedding = TokenAndPositionEmbedding(max_len, vocab_sz, dim_emb)
-        self.transformer_block = Transformer(dim_emb, att_heads, dim_ffn)
+        self.transformer_block = TransformerBlock(dim_emb, att_heads, dim_ffn)
         self.layer_output = tf.keras.layers.Dense(vocab_sz)
 
     def call(self, inputs):

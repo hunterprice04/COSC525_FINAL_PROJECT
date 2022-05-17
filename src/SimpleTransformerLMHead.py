@@ -1,26 +1,10 @@
 import os
-
-import tensorflow as tf
-
-from src.Config import ModelConfig
-from src.Model import TokenAndPositionEmbedding
-from src.Model import Transformer
-from src.Model import WarmupScheduler
 import pickle
-import random
-import string
-
-import tensorflow as tf
 
 from src import Utils
-from src.SimpleTransformer import SimpleTransformer
-from src.Config import Config
-from src.Config import ModelConfig
-from src.Generation import GenerationCallback, Generator
-from src.Model import TokenAndPositionEmbedding
-from src.Model import Transformer
-from src.Model import WarmupScheduler
 from src.Dataset import Dataset
+from src.Generation import GenerationCallback, Generator
+from src.SimpleTransformer import SimpleTransformer
 from src.Tokenizer import Tokenizer
 
 
@@ -55,6 +39,6 @@ class SimpleTransformerLMHead:
         with open(os.path.join(dir_path, "config.pkl"), "wb") as f:
             pickle.dump(self.config, f)
 
-    def generate(self, prompt, max_tokens=100):
+    def generate(self, prompt, max_tokens=25):
         print("# [SimpleTransformerLMHead] Generating...")
         self.generator.generate(prompt, max_tokens)
