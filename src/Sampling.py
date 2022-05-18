@@ -105,9 +105,11 @@ class Sampling:
         return self.model.generate(input_ids, kwargs)
 
 
-def generate_all_sampling(generator, prompt, n_tokens=50):
-    greedy = generator.generate(prompt, n_tokens, generator.GREEDY)
-    random = generator.generate(prompt, n_tokens, generator.RANDOM)
-    top_k = generator.generate(prompt, n_tokens, generator.TOP_K)
-    top_p = generator.generate(prompt, n_tokens, generator.TOP_P)
+def generate_all_sampling(model, prompt, n_tokens=50):
+    greedy = model.generate(prompt, n_tokens, 'greedy')
+    random = model.generate(prompt, n_tokens, 'random')
+    top_k = model.generate(prompt, n_tokens, 'top_k')
+    top_p = model.generate(prompt, n_tokens,'top_p')
     return greedy, random, top_k, top_p
+
+
